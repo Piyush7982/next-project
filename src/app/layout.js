@@ -1,5 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+// import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,8 +14,23 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <body className={inter.className}>
+            <Navbar />
+            <div className="min-h-screen">{children}</div>
+            <Footer />
+          </body>
+          {/* <ThemeSwitcher /> */}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
