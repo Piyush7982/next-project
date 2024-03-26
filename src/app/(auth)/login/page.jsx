@@ -1,5 +1,8 @@
 "use client";
+import { LoginAction } from "@/actions/actions";
+import { signIn } from "@/auth";
 import CustomForm from "@/components/Form";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function Login() {
@@ -28,6 +31,7 @@ function Login() {
   const inputs = [
     {
       id: "username",
+      name: "username",
       type: "text",
       placeholder: "Username",
       value: username,
@@ -36,6 +40,7 @@ function Login() {
     },
     {
       id: "password",
+      name: "password",
       type: "password",
       placeholder: "Password",
       value: password,
@@ -44,6 +49,23 @@ function Login() {
     },
   ];
 
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   const formData = new FormData();
+  //   formData.append("username", username);
+  //   formData.append("password", password);
+
+  //   try {
+  //     await signIn("credentials", {
+  //       username: formData.get("username"),
+  //       password: formData.get("password"),
+  //       // callbackUrl: "/dashboard",
+  //       // redirect: "/dashboard",
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   return (
     <div className="flex justify-center w-full items-center h-screen bg-accent ">
       <CustomForm
@@ -52,6 +74,11 @@ function Login() {
         buttonText="Submit"
         inputs={inputs}
         isValidForm={validForm}
+        // handleSubmit={handleSubmit}
+        action={LoginAction}
+        footerText="Not a user ? Join Us"
+        footerTextButtonType="Signup"
+        footerNavigationLink="/signup"
       />
     </div>
   );

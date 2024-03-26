@@ -1,13 +1,27 @@
 "use client";
+import { toast } from "react-toastify";
+
 import CustomForm from "@/components/Form";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import axios from "axios";
+
 export default function Signup() {
   const username_regex = "^(?=.*[a-zA-Z])(?=.*[0-9])[A-Za-z0-9]+$";
   const email_regex =
     /^(?=.*[a-zA-Z])[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z]+\.[a-zA-Z]+$/;
 
   const [validForm, setvalidForm] = useState(false);
-
+  const [formError, setformError] = useState("");
   const [username, setUsername] = useState("");
   const [isValidUsername, setisValidUsername] = useState(false);
   const [usernameError, setUsernameError] = useState("");
@@ -19,6 +33,9 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [isValidPassword, setisValidPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [role, setrole] = useState("Buyer");
+
+  const [isPending, startTransition] = useTransition();
 
   function handleUsernameChange(event) {
     setUsername(event.target.value);
@@ -85,11 +102,13 @@ export default function Signup() {
     setEmailError("");
     setUsernameError("");
     setPasswordError("");
+    setformError("");
   }, []);
 
   const inputs = [
     {
       id: "username",
+      name: "username",
       type: "text",
       placeholder: "Username",
       value: username,
@@ -98,6 +117,7 @@ export default function Signup() {
     },
     {
       id: "email",
+      name: "email",
       type: "text",
       placeholder: "email",
       value: email,
@@ -106,6 +126,8 @@ export default function Signup() {
     },
     {
       id: "password",
+      name: "password",
+
       type: "password",
       placeholder: "Password",
       value: password,
@@ -113,16 +135,75 @@ export default function Signup() {
       error: passwordError,
     },
   ];
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    // toast.loading("Creating", { isLoading: isPending });
+
+    startTransition(async () => {
+      try {
+        const user = {
+          username: username,
+          email: email,
+          password: password,
+          role: role,
+        };
+        const data = JSON.stringify(user);
+
+        const result = await axios.post("/api/register", data, {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        setformError("");
+        setEmailError("");
+        setPasswordError("");
+        setUsernameError("");
+      } catch (error) {
+        if (
+          error?.response?.data?.Type === "authorisation error" ||
+          error?.response?.data?.Type === "ZodValidationError"
+        ) {
+          setformError(error?.response?.data?.Message);
+        } else {
+          console.error(error);
+        }
+
+        return;
+      }
+    });
+  };
 
   return (
     <div className="flex justify-center w-full items-center h-screen bg-accent ">
       <CustomForm
+        formError={formError}
         className=""
         formName="Signup"
         buttonText="Signup"
         inputs={inputs}
         isValidForm={validForm}
-      />
+        handleSubmit={handleSubmit}
+        disabled={isPending}
+        footerText="Already Have An Account"
+        footerTextButtonType="Login"
+        footerNavigationLink="/login"
+        // action={SignUpAction}
+      >
+        <Select
+          onValueChange={(value) => setrole(value)}
+          defaultValue={role}
+          value={role}
+          name="role"
+        >
+          <SelectTrigger className="mt-4">
+            <SelectValue placeholder="Select a Role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Seller">Seller</SelectItem>
+            <SelectItem value="Buyer">Buyer</SelectItem>
+          </SelectContent>
+        </Select>
+        {/* <h1>sdjfdsnkafdklfmdlkm</h1> */}
+      </CustomForm>
     </div>
   );
 }

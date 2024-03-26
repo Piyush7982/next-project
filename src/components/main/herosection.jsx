@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "../ui/button";
 import { LampContainer } from "../ui/lamp";
 
@@ -20,18 +21,25 @@ export default function Herosection() {
         dolor sit amet consectetur, adipisicing elit. Beatae, ab aliquid at
       </p>
       <div className="flex gap-10 items-center justify-center">
-        <Button
-          size="lg"
-          variant="secondary"
-          className="scale-125 capitalize font-bold"
-        >
-          {" "}
-          Sign Up
-        </Button>
-        <Button size="lg" variant="" className="scale-125 capitalize font-bold">
-          {" "}
-          Login
-        </Button>
+        <Link href="/signup">
+          <Button
+            size="lg"
+            variant="secondary"
+            className="scale-125 bg-secondary capitalize font-bold"
+          >
+            Sign Up{" "}
+          </Button>
+        </Link>
+        <Link href="/login">
+          <Button
+            size="lg"
+            variant=""
+            className="scale-125 capitalize font-bold"
+          >
+            {" "}
+            Login{" "}
+          </Button>
+        </Link>
       </div>
     </div>
     // </LampContainer>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ThemeCustomizer from "./theme/theme-customizer";
 import { ThemeToggle } from "./theme/themetoggle";
 import { Button } from "./ui/button";
@@ -33,12 +34,17 @@ export default function Navbar() {
         <Button className="" size="" variant="ghost">
           Hello
         </Button>
-        <Button className="" size="" variant="secondary">
-          Signup
-        </Button>
-        <Button className="" size="" variant="">
-          Login
-        </Button>
+        <Link href="/signup">
+          <Button className="" size="" variant="secondary">
+            Signup
+          </Button>
+        </Link>
+        <Link href="/login">
+          <Button className="" size="" variant="">
+            Login
+          </Button>
+        </Link>
+
         <ThemeToggle className=" ml-3 " />
         {/* <ThemeCustomizer /> */}
       </div>
