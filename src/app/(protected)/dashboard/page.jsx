@@ -6,5 +6,5 @@ export default async function Page() {
   if (!session) {
     return redirect("/login");
   }
-  return <div></div>;
+  return <div>{JSON.stringify(session)}</div>;
 }

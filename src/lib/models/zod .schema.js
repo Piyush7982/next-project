@@ -29,3 +29,8 @@ export const zodUserSchema = z.object({
     }),
   role: z.enum(["Buyer", "Seller", "Admin"]).default("Buyer"),
 });
+
+export const zodLoginSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+});

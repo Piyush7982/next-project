@@ -4,11 +4,12 @@ import { User } from "@/lib/models/user.schema";
 import { zodUserSchema } from "@/lib/models/zod .schema";
 import { errorResponse } from "@/lib/utils/error.response";
 import { successResponse } from "@/lib/utils/success.response";
+
 import { StatusCodes } from "http-status-codes";
 import { fromZodError } from "zod-validation-error";
 const { NextResponse } = require("next/server");
 
-export async function POST(req, res) {
+export async function Signup(req, res) {
   try {
     await connecToDb();
     const data = await req.json();

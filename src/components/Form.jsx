@@ -32,9 +32,11 @@ const CustomForm = ({
         <CardHeader className="items-center">
           <CardTitle>{formName}</CardTitle>
         </CardHeader>
-        <h1 className="text-sm mb-[0.1rem] opacity-70  max-sm:w-72 dark:text-red-400 text-destructive font-light flex items-center justify-center">
-          {formError}
-        </h1>
+        {formError.length > 1 && (
+          <h1 className="text-sm mb-[0.1rem] opacity-70  max-sm:w-72 dark:text-red-400 text-destructive font-light flex items-center justify-center">
+            {formError}
+          </h1>
+        )}
         <div className="sm:w-8/12 w-11/12 flex flex-col mx-auto">
           {inputs.map((input, index) => (
             <CardContent key={index} className=" pb-0 mb-1">
@@ -49,6 +51,7 @@ const CustomForm = ({
                 placeholder={input.placeholder}
                 name={input.name}
                 disabled={disabled}
+                maxLength={input?.maxLength}
               />
             </CardContent>
           ))}
@@ -64,16 +67,18 @@ const CustomForm = ({
                 {disabled ? <Loader /> : buttonText}
               </Button>
             </div>
-            <h1 className="text-sm mt-4 flex tracking-tight  text-center opacity-85 -mb-4">
-              {footerText} -
-              <Link
-                replace={true}
-                href={footerNavigationLink}
-                className="text-blue-500 tracking-normal hover:cursor-pointer ml-2 font-semibold "
-              >
-                {footerTextButtonType}
-              </Link>
-            </h1>
+            {footerText && (
+              <h1 className="text-sm mt-4 flex tracking-tight  text-center opacity-85 -mb-4">
+                {footerText} -
+                <Link
+                  replace={true}
+                  href={footerNavigationLink}
+                  className="text-blue-500 tracking-normal hover:cursor-pointer ml-2 font-semibold "
+                >
+                  {footerTextButtonType}
+                </Link>
+              </h1>
+            )}
           </CardFooter>
         </div>
       </form>

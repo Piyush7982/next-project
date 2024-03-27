@@ -8,31 +8,38 @@ export const {
   providers: [
     Credentials({
       name: "credentials",
+      type: "credentials",
       async authorize(credential) {
-        const user = { username: "Admin101@gmail.com" };
-        if (credential.username === user.username) {
-          return user;
-        }
+        const user = {
+          username: credential?.username,
+          role: credential?.role,
+          id: credential?.userId,
+        };
 
-        return null;
+        return user;
       },
     }),
   ],
   secret: process.env.AUTH_SECRET,
+
   pages: { signIn: "/login" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // console.log(user);
-        token.username = user.username;
-        token.role = user.role;
+        token.username = user?.username;
+        token.role = user?.role;
+        token.id = user?.id;
       }
+
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
-        // console.log(session);
-        session.user.role = token.role;
+        session.user = {
+          role: token?.role,
+          username: token?.username,
+          id: token?.id,
+        };
       }
       return session;
     },

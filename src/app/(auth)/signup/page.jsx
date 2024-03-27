@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/select";
 
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+  const router = useRouter();
   const username_regex = "^(?=.*[a-zA-Z])(?=.*[0-9])[A-Za-z0-9]+$";
   const email_regex =
     /^(?=.*[a-zA-Z])[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z]+\.[a-zA-Z]+$/;
@@ -38,12 +40,18 @@ export default function Signup() {
   const [isPending, startTransition] = useTransition();
 
   function handleUsernameChange(event) {
+    event.target.value = event.target.value.replace(/\s/g, "");
+
     setUsername(event.target.value);
   }
   function handleEmailChange(event) {
+    event.target.value = event.target.value.replace(/\s/g, "");
+
     setEmail(event.target.value);
   }
   function handlePasswordChange(event) {
+    event.target.value = event.target.value.replace(/\s/g, "");
+
     setPassword(event.target.value);
   }
 
@@ -56,6 +64,8 @@ export default function Signup() {
       setisValidUsername(false);
     } else {
       setUsernameError("");
+      setformError("");
+
       setisValidUsername(true);
     }
   }
@@ -69,6 +79,7 @@ export default function Signup() {
     } else {
       setEmailError("");
       setisValidEmail(true);
+      setformError("");
     }
   }
   function validatePassword() {
@@ -114,6 +125,7 @@ export default function Signup() {
       value: username,
       onChange: handleUsernameChange,
       error: usernameError,
+      maxLength: 20,
     },
     {
       id: "email",
@@ -123,6 +135,7 @@ export default function Signup() {
       value: email,
       onChange: handleEmailChange,
       error: emailError,
+      maxLength: 35,
     },
     {
       id: "password",
@@ -133,6 +146,7 @@ export default function Signup() {
       value: password,
       onChange: handlePasswordChange,
       error: passwordError,
+      maxLength: 20,
     },
   ];
   const handleSubmit = async (event) => {
@@ -149,7 +163,7 @@ export default function Signup() {
         };
         const data = JSON.stringify(user);
 
-        const result = await axios.post("/api/register", data, {
+        const result = await axios.post("/api/register/signup", data, {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
@@ -157,6 +171,11 @@ export default function Signup() {
         setEmailError("");
         setPasswordError("");
         setUsernameError("");
+        toast.success("Successfully Signedin", {
+          autoClose: 2000,
+          theme: "colored",
+        });
+        router.replace("/login");
       } catch (error) {
         if (
           error?.response?.data?.Type === "authorisation error" ||

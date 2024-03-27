@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 // import { ThemeSwitcher } from "@/components/theme/theme-switcher";
-
+import { SessionProvider } from "next-auth/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -15,22 +15,24 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <body className={inter.className}>
-            <Navbar />
-            <div className="min-h-screen">{children}</div>
-            <Footer />
-          </body>
-          {/* <ThemeSwitcher /> */}
-        </ThemeProvider>
-      </body>
+      <SessionProvider>
+        <head />
+        <body>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <body className={inter.className}>
+              <Navbar />
+              <div className="min-h-screen">{children}</div>
+              <Footer />
+            </body>
+            {/* <ThemeSwitcher /> */}
+          </ThemeProvider>
+        </body>
+      </SessionProvider>
     </html>
   );
 }
