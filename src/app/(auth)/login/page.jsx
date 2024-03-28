@@ -1,7 +1,7 @@
 "use client";
 import CustomForm from "@/components/Form";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "react-toastify";
 
@@ -74,8 +74,8 @@ function Login() {
         });
 
         setformError("");
-
-        router.replace("/dashboard");
+        router.push("/dashboard");
+        router.refresh("/dashboard");
       } catch (error) {
         if (
           error?.response?.data?.Type === "authorisation error" ||
