@@ -52,7 +52,7 @@ export async function Login(req, res) {
       // redirectTo: "/",
 
       // redirect: "/dashboard",
-      redirectTo: "/dashboard",
+      // redirectTo: "/dashboard",
       redirect: false,
       // redirectTo: "/",
     });

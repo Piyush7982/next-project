@@ -74,7 +74,7 @@ function Login() {
         });
 
         setformError("");
-        router.push("/dashboard");
+        router.replace("/dashboard");
         router.refresh("/dashboard");
       } catch (error) {
         if (
