@@ -8,6 +8,7 @@ import { auth, signOut } from "@/auth";
 export default async function Navbar() {
   const session = await auth();
   const isLoggedin = Boolean(session);
+  const isAdmin = session?.user?.role === "Admin";
 
   return (
     <div className="min-h-[7vh] border border-b-[1px] px-3 py-1 bg-background z-10   text-foreground w-full sm:sticky  absolute  top-0 left-0 right-0 items-center sm:flex justify-between">
@@ -34,12 +35,26 @@ export default async function Navbar() {
         </Button>
       </div>
       <div className="flex items-center mr-2 gap-2 px-6">
-        <Button className="" size="" variant="ghost">
-          Hello
-        </Button>
-        <Button className="" size="" variant="ghost">
-          Hello
-        </Button>
+        {isAdmin && (
+          <>
+            <Button className="" size="" variant="secondary">
+              Promote User
+            </Button>
+            <Button className="" size="" variant="secondary">
+              Requests
+            </Button>
+          </>
+        )}
+        {!isAdmin && (
+          <>
+            <Button className="" size="" variant="ghost">
+              Hello
+            </Button>
+            <Button className="" size="" variant="ghost">
+              Hello
+            </Button>
+          </>
+        )}
         {!isLoggedin && (
           <>
             <Link href="/signup">
