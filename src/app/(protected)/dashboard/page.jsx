@@ -6,5 +6,9 @@ export default async function Page() {
   if (!session) {
     return redirect("/login");
   }
-  return <div>{JSON.stringify(session)}</div>;
+  return (
+    <div className="min-h-screen flex flex-col items-center   space-y-24 sm:pt-20 pt-40 mb-10">
+      {JSON.stringify(session)}
+    </div>
+  );
 }

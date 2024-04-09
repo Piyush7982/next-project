@@ -34,3 +34,8 @@ export const zodLoginSchema = z.object({
   username: z.string(),
   password: z.string(),
 });
+export const zodUserDetailsSchema = z.object({
+  mobile: z.number(),
+  address: z.string(),
+  college: z.string(),
+});

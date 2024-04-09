@@ -44,12 +44,12 @@ const CustomForm = ({
                 {input.error ? input.error : ""}
               </h1>
               <Input
-                value={input.value}
-                onChange={input.onChange}
-                type={input.type}
-                id={input.id}
-                placeholder={input.placeholder}
-                name={input.name}
+                value={input?.value}
+                onChange={input?.onChange}
+                type={input?.type}
+                id={input?.id}
+                placeholder={input?.placeholder}
+                name={input?.name}
                 disabled={disabled}
                 maxLength={input?.maxLength}
               />

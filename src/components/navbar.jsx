@@ -47,12 +47,16 @@ export default async function Navbar() {
         )}
         {!isAdmin && (
           <>
-            <Button className="" size="" variant="ghost">
-              Hello
-            </Button>
-            <Button className="" size="" variant="ghost">
-              Hello
-            </Button>
+            <Link href="/profile">
+              <Button className="" size="" variant="ghost">
+                Profile
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button className="" size="" variant="ghost">
+                Dashboard
+              </Button>
+            </Link>
           </>
         )}
         {!isLoggedin && (

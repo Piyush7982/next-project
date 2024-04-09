@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { LampContainer } from "../ui/lamp";
+import { auth } from "@/auth";
 
-export default function Herosection() {
+export default async function Herosection() {
+  const session = await auth();
+  const isLoggedin = session?.user?.username;
   return (
     // <LampContainer className=" ">
     <div className="container  flex flex-col  items-center min-h-[60vh] justify-center gap-7   text-4xl py-3 my-3">
@@ -21,25 +24,34 @@ export default function Herosection() {
         dolor sit amet consectetur, adipisicing elit. Beatae, ab aliquid at
       </p>
       <div className="flex gap-10 items-center justify-center">
-        <Link href="/signup">
-          <Button
-            size="lg"
-            variant="secondary"
-            className="scale-125 bg-secondary capitalize font-bold"
-          >
-            Sign Up{" "}
-          </Button>
-        </Link>
-        <Link href="/login">
-          <Button
-            size="lg"
-            variant=""
-            className="scale-125 capitalize font-bold"
-          >
-            {" "}
-            Login{" "}
-          </Button>
-        </Link>
+        {!isLoggedin && (
+          <>
+            <Link href="/signup">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="scale-125 bg-secondary capitalize font-bold"
+              >
+                Sign Up{" "}
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button
+                size="lg"
+                variant=""
+                className="scale-125 capitalize font-bold"
+              >
+                {" "}
+                Login{" "}
+              </Button>
+            </Link>
+          </>
+        )}
+        {isLoggedin && (
+          <Link replace={true} href="/dashboard">
+            <Button>Go To Dashboard</Button>
+          </Link>
+        )}
       </div>
     </div>
     // </LampContainer>

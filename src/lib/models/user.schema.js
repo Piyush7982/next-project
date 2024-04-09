@@ -26,6 +26,22 @@ const userSchema = new Schema(
       enum: ["Buyer", "Seller", "Admin"],
       default: "Buyers",
     },
+    mobile: {
+      type: Number,
+      default: " ",
+    },
+    college: {
+      type: String,
+      default: " ",
+    },
+    address: {
+      type: String,
+      default: " ",
+    },
+    registrationCompleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
