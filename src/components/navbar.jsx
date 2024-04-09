@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import ThemeCustomizer from "./theme/theme-customizer";
 import { ThemeToggle } from "./theme/themetoggle";
 import { Button } from "./ui/button";
@@ -11,7 +12,7 @@ export default async function Navbar() {
   const isAdmin = session?.user?.role === "Admin";
 
   return (
-    <div className="min-h-[7vh] border border-b-[1px] px-3 py-1 bg-background z-10   text-foreground w-full sm:sticky  absolute  top-0 left-0 right-0 items-center sm:flex justify-between">
+    <div className="min-h-[7vh] border border-b-[1px] px-3 py-1 bg-background z-20   text-foreground w-full sm:sticky  absolute  top-0 left-0 right-0 items-center sm:flex justify-between">
       <div className="w-full absolute inset-0 h-full -z-10  ">
         <SparklesCore
           id="tsparticlesfullpage"
@@ -37,12 +38,11 @@ export default async function Navbar() {
       <div className="flex items-center mr-2 gap-2 px-6">
         {isAdmin && (
           <>
-            <Button className="" size="" variant="secondary">
-              Promote User
-            </Button>
-            <Button className="" size="" variant="secondary">
-              Requests
-            </Button>
+            <Link href="/admin/update">
+              <Button className="" size="" variant="secondary">
+                Admin Duties{" "}
+              </Button>
+            </Link>
           </>
         )}
         {!isAdmin && (
