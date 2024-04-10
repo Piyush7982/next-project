@@ -217,8 +217,8 @@ export default function Signup() {
             <SelectValue placeholder="Select a Role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Seller">Seller</SelectItem>
-            <SelectItem value="Buyer">Buyer</SelectItem>
+            <SelectItem value="Seller">Lender</SelectItem>
+            <SelectItem value="Buyer">Borrower</SelectItem>
           </SelectContent>
         </Select>
         {/* <h1>sdjfdsnkafdklfmdlkm</h1> */}

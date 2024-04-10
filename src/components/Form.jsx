@@ -33,7 +33,7 @@ const CustomForm = ({
           <CardTitle>{formName}</CardTitle>
         </CardHeader>
         {formError.length > 1 && (
-          <h1 className="text-sm mb-[0.1rem] opacity-70  max-sm:w-72 dark:text-red-400 text-destructive font-light flex items-center justify-center">
+          <h1 className="text-sm mb-[0.1rem] opacity-80  max-sm:w-72 dark:text-red-500 text-destructive font-medium flex items-center justify-center">
             {formError}
           </h1>
         )}

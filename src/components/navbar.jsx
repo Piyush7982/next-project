@@ -52,7 +52,7 @@ export default async function Navbar() {
                 Profile
               </Button>
             </Link>
-            <Link href="/dashboard">
+            <Link replace={true} href="/dashboard">
               <Button className="" size="" variant="ghost">
                 Dashboard
               </Button>

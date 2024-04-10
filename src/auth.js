@@ -15,6 +15,7 @@ export const {
           username: credential?.username,
           role: credential?.role,
           id: credential?.userId,
+          registrationCompleted: credential?.registrationCompleted,
         };
 
         return user;
@@ -30,6 +31,7 @@ export const {
         token.username = user?.username;
         token.role = user?.role;
         token.id = user?.id;
+        token.registrationCompleted = user?.registrationCompleted;
       }
 
       return token;
@@ -40,6 +42,7 @@ export const {
           role: token?.role,
           username: token?.username,
           id: token?.id,
+          registrationCompleted: token?.registrationCompleted,
         };
       }
       return session;

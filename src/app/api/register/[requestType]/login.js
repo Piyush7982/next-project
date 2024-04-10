@@ -48,6 +48,7 @@ export async function Login(req, res) {
       username: username,
       role: user?.role,
       userId: userid,
+      registrationCompleted: user?.registrationCompleted,
 
       // redirectTo: "/",
 

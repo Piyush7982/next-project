@@ -27,6 +27,16 @@ export async function PUT(req) {
         validationError.name
       );
     }
+    const isUsedMobileNumber = await User.findOne({ mobile: mobile });
+    if (isUsedMobileNumber) {
+      if (isUsedMobileNumber.username !== username) {
+        return errorResponse(
+          "Number Already In Use",
+          "authorisation error",
+          StatusCodes.CONFLICT
+        );
+      }
+    }
     const user = await User.findOneAndUpdate(
       { username: username },
       {
