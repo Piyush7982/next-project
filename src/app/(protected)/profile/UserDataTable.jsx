@@ -8,8 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { Button } from "@/components/ui/button";
 import { fetchUserDataByUsername } from "@/actions/user.actions";
+import { FileWarning } from "lucide-react";
 
 export default async function USerDataTable({ username }) {
   const userdetails = await fetchUserDataByUsername(username);
@@ -37,7 +39,18 @@ export default async function USerDataTable({ username }) {
               </TableCell>
               {/* {console.log(userdetails[key])} */}
               {/* <TableCell>{admin?.createdAt}</TableCell> */}
-              <TableCell>{userdetails[key]}</TableCell>
+              <TableCell>
+                {userdetails[key] == 0 || userdetails[key] == "" ? (
+                  <h1 className="font-light text-sm opacity-70 flex gap-2 items-center ">
+                    Not Available{" "}
+                    <span>
+                      <FileWarning size={18} className="opacity-70" />
+                    </span>
+                  </h1>
+                ) : (
+                  userdetails[key]
+                )}
+              </TableCell>
             </TableRow>
           ))}
       </TableBody>

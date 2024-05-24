@@ -10,6 +10,9 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+    image: {
+      type: String,
+    },
     username: {
       type: String,
       required: true,

@@ -13,8 +13,18 @@ function scrollLeft() {
   }
 }
 export function ScrollRight() {
-  return <ChevronRight onClick={scrollRight} />;
+  return (
+    <ChevronRight
+      className="hover:bg-muted transition-all duration-200 delay-75 rounded scale-105"
+      onClick={scrollRight}
+    />
+  );
 }
 export function ScrollLeft() {
-  return <ChevronLeft onClick={scrollLeft} />;
+  return (
+    <ChevronLeft
+      className="hover:bg-muted transition-all duration-200 delay-75 rounded scale-105"
+      onClick={scrollLeft}
+    />
+  );
 }

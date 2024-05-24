@@ -9,19 +9,18 @@ export default async function Herosection() {
   return (
     // <LampContainer className=" ">
     <div className="container  flex flex-col  items-center min-h-[60vh] justify-center gap-7   text-4xl py-3 my-3">
-      <h1 className="capitalize text-7xl font-extrabold  ">
-        This is hero Section
+      <h1 className="capitalize text-6xl sm:text-7xl font-extrabold sm:text-center  ">
+        EduStation{" "}
+        <span className="  text-2xl italic">- Your Campus Companion</span>
       </h1>
-      <p className="text-2xl font-bold opacity-80  max-w-4xl">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim cumque
-        soluta quasi similique explicabo magni pariatur vel voluptas, omnis
-        eligendi neque minima. Quod praesentium eum laudantium saepe deserunt
-        facere inventore. Magni. lorem-100 Lorem ipsum dolor sit amet
-        consectetur, adipisicing elit. Voluptate, tempora nesciunt. Quos enim
-        error voluptatibus quasi dolorum distinctio reprehenderit veritatis,
-        earum saepe. Officiis quia a ipsum repellat voluptatum consequatur ex
-        laboriosam rem neque, doloribus praesentium enim eos et! Lorem ipsum
-        dolor sit amet consectetur, adipisicing elit. Beatae, ab aliquid at
+      <p className="sm:text-2xl text-xl font-bold opacity-80  max-w-4xl mt-5">
+        Navigating through college life just got easier! At EduStation, we
+        understand the unique challenges faced by students. That's why we've
+        created a platform that caters specifically to your needs.
+        {/* <br />
+        <br /> */}
+        Join us at EduStation, where every student's need is met with a
+        solution. Sign up today and make the most of your college experience!
       </p>
       <div className="flex gap-10 items-center justify-center">
         {!isLoggedin && (

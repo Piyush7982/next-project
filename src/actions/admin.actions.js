@@ -29,7 +29,7 @@ export async function fetchUserByUserName(username) {
     const users = await User.find({
       username: { $regex: username, $options: "i" },
     });
-    console.log(users);
+    // console.log(users);
   } catch (error) {
     console.log(error);
     throw error;

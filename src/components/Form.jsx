@@ -32,29 +32,30 @@ const CustomForm = ({
         <CardHeader className="items-center">
           <CardTitle>{formName}</CardTitle>
         </CardHeader>
-        {formError.length > 1 && (
+        {formError && formError.length > 1 && (
           <h1 className="text-sm mb-[0.1rem] opacity-80  max-sm:w-72 dark:text-red-500 text-destructive font-medium flex items-center justify-center">
             {formError}
           </h1>
         )}
         <div className="sm:w-8/12 w-11/12 flex flex-col mx-auto">
-          {inputs.map((input, index) => (
-            <CardContent key={index} className=" pb-0 mb-1">
-              <h1 className="text-xs mb-[0.1rem] opacity-70 h-5 max-sm:w-72 text-foreground font-light sm:flex sm:items-center sm:justify-center">
-                {input.error ? input.error : ""}
-              </h1>
-              <Input
-                value={input?.value}
-                onChange={input?.onChange}
-                type={input?.type}
-                id={input?.id}
-                placeholder={input?.placeholder}
-                name={input?.name}
-                disabled={disabled}
-                maxLength={input?.maxLength}
-              />
-            </CardContent>
-          ))}
+          {inputs &&
+            inputs.map((input, index) => (
+              <CardContent key={index} className=" pb-0 mb-1">
+                <h1 className="text-xs mb-[0.1rem] opacity-70 h-5 max-sm:w-72 text-foreground font-light sm:flex sm:items-center sm:justify-center">
+                  {input.error ? input.error : ""}
+                </h1>
+                <Input
+                  value={input?.value}
+                  onChange={input?.onChange}
+                  type={input?.type}
+                  id={input?.id}
+                  placeholder={input?.placeholder}
+                  name={input?.name}
+                  disabled={disabled}
+                  maxLength={input?.maxLength}
+                />
+              </CardContent>
+            ))}
           <CardContent>{children}</CardContent>
 
           <CardFooter className="flex flex-col items-center  ">

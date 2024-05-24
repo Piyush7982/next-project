@@ -43,7 +43,7 @@ export async function Login(req, res) {
         StatusCodes.CONFLICT
       );
     }
-    const userid = user?._id.toString() + " ";
+    const userid = user?._id.toString();
     await signIn("credentials", {
       username: username,
       role: user?.role,

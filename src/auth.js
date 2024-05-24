@@ -45,6 +45,7 @@ export const {
           registrationCompleted: token?.registrationCompleted,
         };
       }
+
       return session;
     },
   },

@@ -13,6 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ProductCaraousel from "./ProductCaraousel";
+import SellerPurchaseRequest from "./SellerPurchaseRequest";
+import BorrowerPurchaseRequests from "./BorrowerPurchaseRequests";
 export default async function Page() {
   const session = await auth();
   if (!session) {
@@ -22,11 +24,19 @@ export default async function Page() {
   const role = session?.user?.role === "Buyer" ? "Borrower" : "Lender";
   const isRegistered =
     session?.user?.registrationCompleted === "false" ? false : true;
+  const userId = session?.user?.id;
+  // console.log(userId);
   return (
     <div className="min-h-screen flex flex-col items-center   space-y-24 sm:pt-20 pt-40 mb-10">
       {/* {JSON.stringify(session)} */}
       <div className="container flex flex-col  items-center gap-5">
-        <div className="w-full grid md:grid-cols-8 grid-cols-1 gap-4">
+        {/* <div className="border fixed bottom-5 right-5 p-4 z-[1  ]">hello</div> */}
+        {/* {role === "Lender" && (
+          <div className="hidden">
+            <SellerAddItem />
+          </div>
+        )} */}
+        <div className="w-full grid md:grid-cols-8 grid-cols-1 md:gap-4 gap-10">
           <Card className="  bg-accent md:h-40 md:col-span-3    md:mb-10 max-sm:h-[10rem]   flex max-sm:flex-col  justify-around">
             <div className="  md:flex md:flex-col md:justify-center">
               {" "}
@@ -44,31 +54,19 @@ export default async function Page() {
               className=" w-2/6 invisible md:visible object-cover rounded-md opacity-85 my-2"
             />
           </Card>
-          <Card className=" bg-accent md:min-h-40  md:mb-10  flex flex-col justify-around md:col-start-6 md:col-span-3 ">
-            <div className="  ">
-              <CardHeader>
-                <CardTitle>
-                  {isRegistered ? "Edit Profile" : "Registration Incomplete"}
-                </CardTitle>
-              </CardHeader>
-
-              {/* </div> */}
-              <CardContent className="">
-                <div className="w-full  ">
-                  {isRegistered
-                    ? `You can edit your profile by visiting profile section , `
-                    : `You need to complete your registration before proceeding further , `}
-                  <span className="font-light text-blue-500 hover:font-medium transition-all hover:underline ease-in-out ">
-                    <Link href="/profile">click here</Link>
-                  </span>
-                </div>
-              </CardContent>
-            </div>
+          <Card className=" border-none shadow-none  md:min-h-40  md:mb-10  flex flex-col items-center md:col-start-6 md:col-span-3 ">
+            {/* {<SellerPurchaseRequest/>} */}
+            {role === "Lender" && <SellerPurchaseRequest userId={userId} />}
+            {role === "Borrower" && (
+              <BorrowerPurchaseRequests userId={userId} />
+            )}
           </Card>
         </div>
       </div>
-      <div className="container">
-        <ProductCaraousel title="Books" />
+
+      <div className="container flex flex-col gap-16">
+        <ProductCaraousel role={role} title="Books" />
+        <ProductCaraousel role={role} title="Flats/P.G." />
       </div>
     </div>
   );

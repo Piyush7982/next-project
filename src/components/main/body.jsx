@@ -8,33 +8,50 @@ import {
 } from "@/components/ui/card";
 import { BadgeEuro } from "lucide-react";
 import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
+import Image from "next/image";
+// import aim from "../../../public/aim.jgp";
 
 export default function Mainbody() {
   return (
     <div className="flex flex-col container space-y-40">
       <Card className="w-10/12 min-h-96 bg-secondary   mx-auto flex items-center  ">
-        <div className="mx-auto h-4/5 rounded-xl   w-11/12 grid md:grid-cols-4 grid-cols-1 gap-3">
-          <div className="bg-primary h-72 rounded-xl md:col-span-1  ">
-            image
-          </div>
+        <div className="mx-auto h-4/5 rounded-xl    w-11/12 grid md:grid-cols-4 grid-cols-1 gap-3 max-sm:pt-3">
+          <Image
+            className="bg-primary h-72 rounded-xl md:col-span-1 object-cover mx-auto  "
+            height={350}
+            width={200}
+            src={
+              "https://th.bing.com/th/id/OIG3.At4fpmsqfDCY7qsYPGxZ?w=270&h=270&c=6&r=0&o=5&dpr=1.4&pid=ImgGn"
+            }
+            alt="image"
+          />
           <div className="md:col-span-3 text-wrap ml-2   h-full ">
             {" "}
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum,
-            non repellendus illum neque rerum eius error inventore, dolorum
-            voluptatum ullam repellat eveniet voluptas, mollitia recusandae
-            aspernatur ad ea tenetur assumenda. Quasi quod fuga voluptatem
-            pariatur tempore provident! Porro amet voluptatem rerum perspiciatis
-            veritatis numquam quis. Blanditiis magnam necessitatibus ex unde
-            libero doloremque natus consectetur, ut obcaecati voluptatum veniam
-            in laboriosam! Odio tenetur aperiam est inventore autem
-            reprehenderit? Nam est facere itaque a id maxime, animi quasi cumque
-            beatae consequatur debitis tenetur corrupti dicta excepturi maiores,
-            nihil voluptate quae numquam dolore voluptatem repellendus facilis
-            molestias quibusdam ipsum? Lorem ipsum dolor sit, amet consectetur
-            adipisicing elit. Nisi ut cupiditate ipsa tempora, voluptates fugiat
-            unde ipsam vero magnam. Atque fuga, velit omnis alias repudiandae,
-            animi labore tenetur inventore asperiores odit nostrum incidunt iste
-            quaerat tempora ab numquam quidem.
+            At <span className="font-bold">EduStation</span>, our aim is to
+            revolutionize the college experience by providing a one-stop
+            solution for students’ needs. We strive to create a platform that
+            not only facilitates the buying and selling of second-hand
+            stationary but also simplifies the process of finding vacant flats
+            and hostels.
+            <br />
+            <br />
+            Our vision is to create a{" "}
+            <span className="font-bold">
+              community where every student feels supported and empowered.
+            </span>{" "}
+            We envision a world where students can focus on their studies and
+            personal growth, without being burdened by the logistical challenges
+            of college life.
+            <br />
+            <br />
+            At EduStation,{" "}
+            <span className="font-bold">
+              we believe in the power of technology
+            </span>{" "}
+            to make life easier.Our goals are clear and focused. We aim to
+            develop a user-friendly interface that enhances the overall user
+            experience. We are committed to making a difference in the lives of
+            students, one transaction at a time.
           </div>
         </div>
       </Card>
@@ -43,77 +60,52 @@ export default function Mainbody() {
         <Card className="h-80 w-80 mx-auto flex flex-col justify-between">
           <div className="flex items-center justify-between ">
             <CardHeader>
-              <CardTitle>Heading 1</CardTitle>
-              <CardDescription>Description</CardDescription>
+              <CardTitle>Effortless Transactions</CardTitle>
             </CardHeader>
-            <BadgeEuro
-              color="#000000"
-              className="mr-16 -mt-3 "
-              fill="gray"
-              size={50}
-            />
+            <BadgeEuro color="green" className="mr-5" fill="green" size={50} />
           </div>
           <CardContent>
             <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae
-              rem minus, fuga numquam nihil dolores quae deserunt. Earum aut
-              tenetur facilis culpa, consequatur, dolorem enim ab commodi quam
-              magni a velit.
+              EduStation offers a seamless and user-friendly interface that
+              allows students to effortlessly buy and sell second-hand
+              stationary. With just a few clicks, students can browse through a
+              wide range of items, place orders, make payments, and even list
+              their own items for sale.
             </p>
           </CardContent>
-          <CardFooter>
-            <CardDescription>Description</CardDescription>
-          </CardFooter>
         </Card>
         <Card className="h-80 w-80 mx-auto flex flex-col justify-between">
           <div className="flex items-center justify-between ">
             <CardHeader>
-              <CardTitle>Heading 1</CardTitle>
-              <CardDescription>Description</CardDescription>
+              <CardTitle>Real-Time Accommodation</CardTitle>
             </CardHeader>
-            <BadgeEuro
-              color="#000000"
-              className="mr-16 -mt-3 "
-              fill="gray"
-              size={50}
-            />
+            <BadgeEuro color="green" className="mr-5" fill="green" size={50} />
           </div>
           <CardContent>
             <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae
-              rem minus, fuga numquam nihil dolores quae deserunt. Earum aut
-              tenetur facilis culpa, consequatur, dolorem enim ab commodi quam
-              magni a velit.
+              One of the standout features of EduStation is its real-time
+              accommodation finder. This feature provides students with
+              up-to-date information on vacant flats and hostels, making the
+              process of finding suitable accommodation quicker and easier.
             </p>
           </CardContent>
-          <CardFooter>
-            <CardDescription>Description</CardDescription>
-          </CardFooter>
         </Card>
         <Card className="h-80 w-80 mx-auto flex flex-col justify-between">
-          <div className="flex items-center justify-between ">
+          <div className="flex items-center justify-between  ">
             <CardHeader>
-              <CardTitle>Heading 1</CardTitle>
-              <CardDescription>Description</CardDescription>
+              <CardTitle>Personalized Experience</CardTitle>
             </CardHeader>
-            <BadgeEuro
-              color="#000000"
-              className="mr-16 -mt-3 "
-              fill="gray"
-              size={50}
-            />
+            <BadgeEuro color="green" className="mr-5" fill="green" size={50} />
           </div>
           <CardContent>
             <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae
-              rem minus, fuga numquam nihil dolores quae deserunt. Earum aut
-              tenetur facilis culpa, consequatur, dolorem enim ab commodi quam
-              magni a velit.
+              EduStation is designed with the student in mind. Our platform
+              learns from your preferences and behaviors to provide a
+              personalized user experience. Whether you’re a buyer looking for
+              specific items or a seller targeting a certain group of students,
+              our platform adapts to your needs.
             </p>
           </CardContent>
-          <CardFooter>
-            <CardDescription>Description</CardDescription>
-          </CardFooter>
         </Card>
       </div>
 
@@ -135,31 +127,32 @@ export default function Mainbody() {
 const testimonials = [
   {
     quote:
-      "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair.",
-    name: "Charles Dickens",
-    title: "A Tale of Two Cities",
+      "EduStation has been a game-changer for me. I managed to sell all my old textbooks within a week. The process was so simple and efficient. Highly recommended!",
+    name: "Praveen",
+    title: "Seller at EduStation",
   },
   {
     quote:
-      "To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, Or to take Arms against a Sea of troubles, And by opposing end them: to die, to sleep.",
-    name: "William Shakespeare",
-    title: "Hamlet",
-  },
-  {
-    quote: "All that we see or seem is but a dream within a dream.",
-    name: "Edgar Allan Poe",
-    title: "A Dream Within a Dream",
+      "I was struggling to find affordable stationary until I came across EduStation. I found everything I needed at great prices. The user interface is also very friendly. A big thumbs up!",
+    name: "Chirag",
+    title: "Buyer at EduStation",
   },
   {
     quote:
-      "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
-    name: "Jane Austen",
-    title: "Pride and Prejudice",
+      "I had a pile of unused stationary lying around. Thanks to EduStation, not only did I declutter, but I also made some money. The platform is secure and the team is very supportive.",
+    name: "Devansh",
+    title: "Seller at EduStation",
   },
   {
     quote:
-      "Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.",
-    name: "Herman Melville",
-    title: "Moby-Dick",
+      "Finding a vacant hostel was a nightmare until I found EduStation. I found a great place within my budget. EduStation made my hostel hunting experience stress-free.",
+    name: "Archit",
+    title: "Buyer at EduStation",
+  },
+  {
+    quote:
+      "I listed my old calculator on EduStation and it was sold within two days. The platform is easy to use and the service is excellent. I'll definitely use it again.",
+    name: "Kunal",
+    title: "Seller at EduStation",
   },
 ];

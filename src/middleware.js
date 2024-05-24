@@ -4,6 +4,7 @@ export default auth((req) => {
   const isLoggedin = !!req.auth;
   const { nextUrl } = req;
   const currentRoute = nextUrl.pathname;
+  // console.log(req.auth?.user.id);
   const isAdmin = req?.auth?.user?.role === "Admin";
   //   console.log(isAdmin);
   // const isAdmin=
