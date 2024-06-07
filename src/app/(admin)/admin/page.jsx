@@ -10,29 +10,29 @@ import Link from "next/link";
 
 import { MousePointerSquare } from "lucide-react";
 import avenger from "../../../../public/avenger.jpg";
-import groot from "../../../../public/groot.jpg";
 import superman from "../../../../public/superman.jpg";
-import spiderman from "../../../../public/spiderman.jpg";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-function Page() {
+import { auth } from "@/auth";
+import { fetchAdminDetails } from "@/actions/admin.actions";
+async function Page() {
+  const session = await auth();
+  if (!session) {
+    return redirect("/login");
+  }
+  const id = session?.user?.id;
+  const data = await fetchAdminDetails(id);
+
   return (
     <div className="min-h-screen flex flex-col items-center   space-y-24 sm:pt-20 pt-40 mb-10">
       <div className="container flex flex-col  gap-10 md:gap-20 ">
         <div className="w-full grid md:grid-cols-8 grid-cols-1 gap-4">
-          <Card className=" relative bg-accent md:h-40 md:col-span-3    md:mb-10  flex flex-col justify-around">
-            <Image
-              src={groot}
-              objectFit="cover"
-              fill={true}
-              className="opacity-30 -hue-rotate-60"
-            />
-
+          <Card className=" relative border-0 shadow-none md:h-40 md:col-span-3    md:mb-10  flex flex-col justify-around">
             <div className="relative z-10 text-primary">
               {" "}
               <CardHeader>
                 {/* <CardHeader className=" flex-row items-center justify-between"> */}
-                <CardTitle>Welcome Admin</CardTitle>
+                <CardTitle className="text-3xl">Welcome Admin</CardTitle>
                 {/* <Image src={avenger} /> */}
               </CardHeader>
               <CardContent>
@@ -40,13 +40,7 @@ function Page() {
               </CardContent>
             </div>
           </Card>
-          <Card className="relative bg-accent md:min-h-40  md:mb-10  flex flex-col justify-around md:col-start-5 md:col-span-3 ">
-            <Image
-              src={spiderman}
-              objectFit="cover"
-              fill={true}
-              className="  brightness-75 opacity-30 "
-            />
+          <Card className="relative  md:min-h-40  md:mb-10  flex flex-col justify-around md:col-start-5 md:col-span-3 ">
             <div className="relative z-10  ">
               <CardHeader>
                 <CardTitle>Your Credentials</CardTitle>
@@ -57,11 +51,11 @@ function Page() {
                 <div className="w-full flex flex-col items-center ">
                   <div className="flex  justify-between w-11/12 md:w-9/12">
                     <h1 className="font-medium">Username:</h1>
-                    <h1 className=" text-md">iamadmin3</h1>
+                    <h1 className=" text-md">{data?.username}</h1>
                   </div>
                   <div className="flex  justify-between w-11/12 md:w-9/12">
                     <h1 className="font-medium ">Email:</h1>
-                    <h1 className="text-md  ">admin@admin.admin</h1>
+                    <h1 className="text-md  ">{data?.email}</h1>
                   </div>
                   <div className="flex  justify-between w-11/12 md:w-9/12">
                     <h1 className="font-medium ">Pending Approvals:</h1>
@@ -78,6 +72,7 @@ function Page() {
             objectFit="cover"
             fill={true}
             className="  opacity-40 "
+            alt="cover"
           />
           <div className="z-10 relative text-primary">
             <CardHeader>
@@ -118,6 +113,7 @@ function Page() {
             src={avenger}
             objectFit="cover"
             fill={true}
+            alt="cover"
             // className="  invisible dark:visible dark:opacity-30 "
             className=" backdrop-brightness-50 dark:brightness-100 opacity-30 "
           />
@@ -136,13 +132,14 @@ function Page() {
             <CardContent className="flex flex-col relative ">
               {" "}
               <CardTitle className="mb-2">
-                1. The Power of Thor's Hammer: Admin Rights
+                1. The Power of Thor&apos;s Hammer: Admin Rights
               </CardTitle>
               <CardDescription className="mb-6 ">
-                You wield the power of Mjolnir, Thor's hammer. You can grant
-                admin rights, demote admins to regular users, or ban users. But
-                remember, "Whosoever holds this hammer, if he be worthy, shall
-                possess the power of Thor." Use your powers wisely and justly.
+                You wield the power of Mjolnir, Thor&apos;s hammer. You can
+                grant admin rights, demote admins to regular users, or ban
+                users. But remember, &quot;Whosoever holds this hammer, if he be
+                worthy, shall possess the power of Thor.&quot; Use your powers
+                wisely and justly.
               </CardDescription>
               <CardTitle className="mb-2">
                 2. The Wisdom of Vision: Fair Judgment
@@ -150,8 +147,8 @@ function Page() {
               <CardDescription className="mb-6">
                 Vision was created for the betterment of the universe. As an
                 admin, you are expected to approve pending requests that require
-                admin verification. Use the Mind Stone's wisdom to make fair and
-                unbiased decisions.
+                admin verification. Use the Mind Stone&apos;s wisdom to make
+                fair and unbiased decisions.
               </CardDescription>
               <CardTitle className="mb-2">
                 3. The Tenacity of Captain America: Respect and Dignity
@@ -165,9 +162,9 @@ function Page() {
                 4. The Responsibility of Spider-Man: No Misuse of Power
               </CardTitle>
               <CardDescription className="mb-6">
-                Remember Peter Parker's lesson: "With great power comes great
-                responsibility." Do not misuse your admin powers for personal
-                gain or amusement.
+                Remember Peter Parker&apos;s lesson: &quot;With great power
+                comes great responsibility.&quot; Do not misuse your admin
+                powers for personal gain or amusement.
               </CardDescription>
             </CardContent>
             {/* <CardFooter> */}

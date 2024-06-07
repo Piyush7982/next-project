@@ -15,11 +15,11 @@ export default async function Herosection() {
       </h1>
       <p className="sm:text-2xl text-xl font-bold opacity-80  max-w-4xl mt-5">
         Navigating through college life just got easier! At EduStation, we
-        understand the unique challenges faced by students. That's why we've
-        created a platform that caters specifically to your needs.
+        understand the unique challenges faced by students. That&apos;s why
+        we&apos;ve created a platform that caters specifically to your needs.
         {/* <br />
         <br /> */}
-        Join us at EduStation, where every student's need is met with a
+        Join us at EduStation, where every student&apos;s need is met with a
         solution. Sign up today and make the most of your college experience!
       </p>
       <div className="flex gap-10 items-center justify-center">

@@ -37,12 +37,14 @@ export default async function Page() {
           </div>
         )} */}
         <div className="w-full grid md:grid-cols-8 grid-cols-1 md:gap-4 gap-10">
-          <Card className="  bg-accent md:h-40 md:col-span-3    md:mb-10 max-sm:h-[10rem]   flex max-sm:flex-col  justify-around">
-            <div className="  md:flex md:flex-col md:justify-center">
+          <Card className="md:border-0  shadow-none  md:min-h-32   md:col-span-3 max-sm:items-center    md:mb-10 max-sm:h-[10rem]   flex max-sm:flex-col ">
+            <div className=" md:items-start  md:flex  md:flex-col sm:w-[60%] w-full ">
               {" "}
-              <CardHeader>
+              <CardHeader className="sm:w-full   ">
                 {/* <CardHeader className=" flex-row items-center justify-between"> */}
-                <CardTitle>Welcome {username}</CardTitle>
+                <CardTitle className="break-words sm:w-full">
+                  Welcome {username}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p>You are signed in as a {role} </p>
@@ -51,7 +53,8 @@ export default async function Page() {
             <Image
               src={profilereplacement}
               alt="image"
-              className=" w-2/6 invisible md:visible object-cover rounded-md opacity-85 my-2"
+              priority
+              className=" w-[40%] max-sm:hidden  object-cover rounded-md opacity-85 my-2"
             />
           </Card>
           <Card className=" border-none shadow-none  md:min-h-40  md:mb-10  flex flex-col items-center md:col-start-6 md:col-span-3 ">
@@ -65,8 +68,8 @@ export default async function Page() {
       </div>
 
       <div className="container flex flex-col gap-16">
-        <ProductCaraousel role={role} title="Books" />
-        <ProductCaraousel role={role} title="Flats/P.G." />
+        <ProductCaraousel model="Stationary" role={role} title="Books" />
+        <ProductCaraousel model="Flat" role={role} title="Flats/P.G." />
       </div>
     </div>
   );

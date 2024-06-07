@@ -10,49 +10,56 @@ import {
 } from "@/components/ui/table";
 import { RemoveAdminDialog } from "./RemoveAdminDialog";
 import { Button } from "@/components/ui/button";
-import { fetchAdmins } from "@/actions/admin.actions";
+import { fetchPendingProductApprovals } from "@/actions/admin.actions";
 import { auth } from "@/auth";
+import { modifyDate } from "@/lib/helper/dataModifier";
+import Link from "next/link";
 
 export default async function RequestTable() {
   const admins = null;
+  const approvals = await fetchPendingProductApprovals(0);
+  // console.log(a);
   const session = await auth();
   const currentUser = session?.user;
   return (
     <Table className="border">
       <TableCaption>Pending Requests.</TableCaption>
       <TableHeader className="pt-16">
-        {admins && (
+        {approvals && (
           <TableRow>
             <TableHead>USERNAME</TableHead>
-            <TableHead>EMAIL</TableHead>
-            <TableHead>ACTION</TableHead>
+            <TableHead>PRODUCT</TableHead>
+            <TableHead>CATEGORY</TableHead>
+            <TableHead>CREATED </TableHead>
+            <TableHead></TableHead>
           </TableRow>
         )}
       </TableHeader>
       <TableBody>
-        {admins &&
-          admins.map((admin) => (
-            <TableRow key={admin?._id}>
-              <TableCell>{admin?.username}</TableCell>
+        {approvals &&
+          approvals.map((approval) => (
+            <TableRow key={approval?._id}>
+              <TableCell>{approval?.lender?.username}</TableCell>
               {/* <TableCell>{admin?.createdAt}</TableCell> */}
-              <TableCell>{admin?.email}</TableCell>
+              <TableCell>{approval?.Model?.name}</TableCell>
               <TableCell>
-                {currentUser?.username !== admin.username && (
-                  <RemoveAdminDialog
-                    warning={
-                      "This will remove the user from being an Admin and all Admin rights will be taken away."
-                    }
-                    title={"Remove Admin"}
-                    username={admin?.username}
-                  />
-                )}
-                {currentUser?.username === admin.username && (
-                  <Button variant="link">Current User</Button>
-                )}
+                {approval?.onModel === "flats"
+                  ? "Flat / P.G."
+                  : "Books / Stationary"}
+              </TableCell>
+              <TableCell>{modifyDate(approval?.createdAt)}</TableCell>
+              <TableCell>
+                {
+                  <Link
+                    href={`/admin/update/approvalRequest/?id=${approval?._id}`}
+                  >
+                    <Button className="text-xs h-7">Review</Button>
+                  </Link>
+                }
               </TableCell>
             </TableRow>
           ))}
-        {!admins && (
+        {approvals.length < 1 && (
           <>
             <TableRow>
               <TableCell>No Pending Requests</TableCell>
@@ -60,18 +67,18 @@ export default async function RequestTable() {
           </>
         )}
       </TableBody>
-      {admins && (
+      {approvals && (
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={2}>Total</TableCell>
-            <TableCell className="text-right">{admins?.length}</TableCell>
+            <TableCell colSpan={4}>Total</TableCell>
+            <TableCell className="text-right">{approvals?.length}</TableCell>
           </TableRow>
         </TableFooter>
       )}
-      {!admins && (
+      {!approvals && (
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={2}>Total</TableCell>
+            <TableCell colSpan={4}>Total</TableCell>
             <TableCell className="text-right">0</TableCell>
           </TableRow>
         </TableFooter>

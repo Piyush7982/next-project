@@ -57,7 +57,7 @@ export function RemoveAdminDialog({ title, warning, username }) {
               });
             }}
           >
-            {isPending ? <Loader /> : "Continue"}
+            {isPending ? <Loader className="animate-spin" /> : "Continue"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

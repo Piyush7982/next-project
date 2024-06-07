@@ -73,7 +73,10 @@ export async function fetchBorrowRequests(userId) {
   let requests = [];
   try {
     await connecToDb();
-    requests = await Request.find({ borrower: userId }).populate("Model", {
+    requests = await Request.find({
+      borrower: userId,
+      approvalStatus: "Pending",
+    }).populate("Model", {
       tags: 0,
       createdAt: 0,
       updatedAt: 0,

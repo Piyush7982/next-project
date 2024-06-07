@@ -93,13 +93,13 @@ export default function Signup() {
   }
 
   useEffect(() => {
-    validateUsername();
+    validateUsername(username);
   }, [username]);
   useEffect(() => {
-    validateEmail();
+    validateEmail(email);
   }, [email]);
   useEffect(() => {
-    validatePassword();
+    validatePassword(password);
   }, [password]);
 
   useEffect(() => {

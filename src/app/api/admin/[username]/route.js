@@ -28,7 +28,8 @@ export async function GET(request, { params }) {
     }
     const users = await User.find({
       username: { $regex: usernameToFind, $options: "i" },
-    }).select(["username", "email"]);
+      role: ["Buyer", "Seller"],
+    }).select(["username", "email", "_id"]);
     return successResponse("User Fetched succesfully", users, StatusCodes.OK);
   } catch (error) {
     return errorResponse(error.message, error.type, error.statusCode);

@@ -1,5 +1,7 @@
 "use server";
 
+import { Approval } from "@/lib/models/approval.schema";
+
 const { connecToDb } = require("@/lib/connectToDb");
 const { Request } = require("@/lib/models/Request.schema");
 
@@ -7,7 +9,10 @@ export async function fetchRequests(userId) {
   let requests = [];
   try {
     await connecToDb();
-    requests = await Request.find({ lender: userId }).populate("Model", {
+    requests = await Request.find({
+      lender: userId,
+      approvalStatus: "Pending",
+    }).populate("Model", {
       name: 1,
     });
     return requests;
@@ -17,17 +22,52 @@ export async function fetchRequests(userId) {
   }
 }
 export async function fetchCompleteProductData(productId) {
+  let result = "";
   try {
-    // console.log(productId);
-    const result = await Request.find({ Model: productId }).populate("Model", {
+    await connecToDb();
+    result = await Request.findOne({ Model: productId }).populate("Model", {
       tags: 0,
       available: 0,
       createdAt: 0,
       updatedAt: 0,
     });
+    // console.log(result);
     return result;
   } catch (error) {
     console.log(error);
-    return null;
+    return result;
+  }
+}
+export async function updateRequestStatus(productId, status) {
+  try {
+    await connecToDb();
+
+    const requests = await Request.findOneAndUpdate(
+      { Model: productId },
+      {
+        approvalStatus: status,
+      }
+    );
+
+    return;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+}
+export async function createAdminApproval(productId, lender, onModel) {
+  try {
+    await connecToDb();
+
+    const approval = await Approval.create({
+      onModel: onModel,
+      Model: productId,
+      lender: lender,
+    });
+
+    return;
+  } catch (error) {
+    console.log(error);
+    return;
   }
 }

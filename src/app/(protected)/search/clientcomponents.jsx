@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 // import mongoose from "mongoose";
 import { toast } from "react-toastify";
 
-export function ClientItemRequest({ userId, itemId, itemQuery }) {
+export function ClientItemRequest({ userId, itemId, type }) {
   const router = useRouter();
   // console.log(userId, itemId);
   const [buttonError, setbuttonError] = useState({ loaded: false, data: "" });
@@ -31,7 +31,7 @@ export function ClientItemRequest({ userId, itemId, itemQuery }) {
       }
     }
     isDuplicateRequestExist();
-  }, [isClicked]);
+  }, [isClicked, userId, itemId]);
 
   return (
     <>
@@ -45,7 +45,7 @@ export function ClientItemRequest({ userId, itemId, itemQuery }) {
         <Button
           onClick={() => {
             async function handleOnclick() {
-              await createPurchaseRequest("664b288faa2b65f48990af42", "Flats");
+              await createPurchaseRequest(itemId, type);
               toast.success("Request sent to seller, wait for confirmation");
             }
             handleOnclick();

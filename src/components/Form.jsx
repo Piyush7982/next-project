@@ -65,7 +65,7 @@ const CustomForm = ({
                 disabled={!isValidForm || disabled}
                 className="w-5/12 max-sm:mt-2 disabled:cursor-not-allowed  "
               >
-                {disabled ? <Loader /> : buttonText}
+                {disabled ? <Loader className="animate-spin" /> : buttonText}
               </Button>
             </div>
             {footerText && (

@@ -19,7 +19,7 @@ export default async function SellerPurchaseRequest({ userId }) {
       </div>
 
       <ScrollArea className="md:h-44  h-40  bg-popover    md:w-9/12 w-10/12 rounded-md border shadow ">
-        <div className="pb-2  flex flex-col items-center my-auto ">
+        <div className="pb-2 w-11/12 mx-auto rounded-xl  flex flex-col items-center my-auto ">
           {requests.length > 0 &&
             requests.map((request) => {
               return (
@@ -34,7 +34,8 @@ export default async function SellerPurchaseRequest({ userId }) {
                       </Button> */}
                       <DialogDemo
                         className="h-8"
-                        productId={request?.Model?._id}
+                        type="Lender"
+                        productId={request?.Model?._id + ""}
                       />
                     </div>
                   </div>
@@ -45,8 +46,8 @@ export default async function SellerPurchaseRequest({ userId }) {
 
           {requests.length == 0 && (
             <div className="  text-start font-light pl-3 mt-6 ">
-              All customer puchase request will be shown here. Currently no item
-              purchase request is made to you.
+              All customer pending puchase request will be shown here. Currently
+              no pending item purchase request is made to you.
             </div>
           )}
         </div>
