@@ -67,6 +67,10 @@ export default async function Books(props) {
           Browser All {params.productType === "flat"
             ? "Flats"
             : "Stationary"}{" "}
+          <span className="text-sm font-normal ">
+            (results showing for
+            {<span className="font-bold"> {user?.college}</span>})
+          </span>
         </h1>
         <div className="grid grid-cols-12 gap-5 ">
           {data &&

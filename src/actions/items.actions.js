@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import { connecToDb } from "@/lib/connectToDb";
 import { Approval } from "@/lib/models/approval.schema";
 import { Flat } from "@/lib/models/flat.schema";
@@ -8,9 +9,11 @@ import { Stationary } from "@/lib/models/stationary.schema";
 export async function fetchBooks(page, limit, type) {
   connecToDb();
   try {
+    const session = await auth();
+    const availableCollege = session?.user?.college;
     const model = type === "stationary" ? Stationary : Flat;
     const books = await model
-      .find({ approvalStatus: "Approved" })
+      .find({ approvalStatus: "Approved", availableCollege: availableCollege })
       .limit(limit)
       .skip((page - 1) * limit);
     return books;
@@ -23,9 +26,12 @@ export async function fetchBooks(page, limit, type) {
 export async function getTotalBooks(type) {
   connecToDb();
   try {
+    const session = await auth();
+    const availableCollege = session?.user?.college;
     const model = type === "stationary" ? Stationary : Flat;
     const totalbooks = await model.countDocuments({
       approvalStatus: "Approved",
+      availableCollege: availableCollege,
     });
     return totalbooks;
   } catch (error) {
@@ -38,7 +44,13 @@ export async function fetchCaraouselProducts(model) {
   const Model = model === "Flat" ? Flat : Stationary;
   let result = [];
   try {
-    result = await Model.find({ available: true, approvalStatus: "Approved" })
+    const session = await auth();
+    const availableCollege = session?.user?.college;
+    result = await Model.find({
+      available: true,
+      availableCollege: availableCollege,
+      approvalStatus: "Approved",
+    })
       .limit(7)
       .skip(0)
       .select({ _id: 1, name: 1, price: 1, createdAt: 1, image: 1 })

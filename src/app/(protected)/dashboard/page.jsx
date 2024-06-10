@@ -41,7 +41,15 @@ export default async function Page() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p>You are signed in as a {role} </p>
+                <p>You are signed in as a {role}. </p>
+                {isRegistered && (
+                  <p>
+                    Location :{" "}
+                    <span className="font-bold ">
+                      {session?.user?.college}{" "}
+                    </span>
+                  </p>
+                )}
               </CardContent>
             </div>
             <Image

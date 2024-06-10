@@ -22,7 +22,7 @@ export async function POST(req) {
       return redirect("/login");
     }
     const formdata = await req.formData();
-
+    const availableCollege = session?.user?.college;
     const img = formdata.get("image");
     const fileBuffer = await img.arrayBuffer();
     const mimeType = img.type;
@@ -79,6 +79,7 @@ export async function POST(req) {
       ...data,
       lender: isValidUser?._id,
       image: imageLink,
+      availableCollege: availableCollege,
     });
     const productId = result?._id;
     const onModel = data?.model === "Flat" ? "flats" : "stationaries";

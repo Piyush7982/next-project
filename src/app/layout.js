@@ -8,7 +8,6 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 // import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { SessionProvider } from "next-auth/react";
-import StateProvider from "@/lib/states/state-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -22,23 +21,21 @@ export default function RootLayout({ children }) {
       <SessionProvider>
         <head />
         <body>
-          <StateProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <body className={inter.className}>
-                <Navbar />
-                <ToastContainer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <body className={inter.className}>
+              <Navbar />
+              <ToastContainer />
 
-                <div className="min-h-screen">{children}</div>
-                <Footer />
-              </body>
-              {/* <ThemeSwitcher /> */}
-            </ThemeProvider>
-          </StateProvider>
+              <div className="min-h-screen">{children}</div>
+              <Footer />
+            </body>
+            {/* <ThemeSwitcher /> */}
+          </ThemeProvider>
         </body>
       </SessionProvider>
     </html>
