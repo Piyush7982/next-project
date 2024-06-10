@@ -23,6 +23,8 @@ const stationarySchema = new Schema(
       type: String,
       required: true,
     },
+    availableCollege: { type: String, default: " " },
+
     tags: [
       {
         type: String,

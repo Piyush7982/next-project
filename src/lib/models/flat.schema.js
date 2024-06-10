@@ -22,6 +22,7 @@ const flatSchema = new Schema(
       type: Number,
       required: true,
     },
+    availableCollege: { type: String, default: " " },
     approvalStatus: {
       type: String,
       enum: ["Approved", "Pending", "Declined"],

@@ -25,7 +25,7 @@ export function ClientItemRequest({ itemId, type }) {
         if (!Boolean(data)) {
           setbuttonError({ loaded: true, data: "" });
         } else {
-          setbuttonError({ loaded: true, data: "Request already processed" });
+          setbuttonError({ loaded: true, data: "Request  processed" });
         }
       } catch (error) {
         setbuttonError({ loaded: true, data: "internal server error" });

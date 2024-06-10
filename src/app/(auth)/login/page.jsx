@@ -76,6 +76,8 @@ function Login() {
         setformError("");
         router.replace("/dashboard");
         router.refresh("/dashboard");
+        // redirect("/dashboard");
+        location.reload();
       } catch (error) {
         if (
           error?.response?.data?.Type === "authorisation error" ||

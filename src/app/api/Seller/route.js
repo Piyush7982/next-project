@@ -30,15 +30,6 @@ export async function POST(req) {
     const base64Data = Buffer.from(fileBuffer).toString("base64");
     const fileUri = "data:" + mimeType + ";" + encoding + "," + base64Data;
 
-    const imageLink = await uploadImageonCloudinary(fileUri, img.name);
-    if (!imageLink) {
-      return errorResponse(
-        "Failed to upload image",
-        "Cloudinary Error",
-        StatusCodes.INTERNAL_SERVER_ERROR
-      );
-    }
-
     const data = {};
     formdata.forEach((value, key) => {
       if (key !== "image") {
@@ -74,6 +65,14 @@ export async function POST(req) {
         "Not a valid User",
         "Authentication Error",
         StatusCodes.UNAUTHORIZED
+      );
+    }
+    const imageLink = await uploadImageonCloudinary(fileUri, img.name);
+    if (!imageLink) {
+      return errorResponse(
+        "Failed to upload image",
+        "Cloudinary Error",
+        StatusCodes.INTERNAL_SERVER_ERROR
       );
     }
     const result = await model.create({

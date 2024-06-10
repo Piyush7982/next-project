@@ -5,6 +5,8 @@ import { connecToDb } from "@/lib/connectToDb";
 import { zodUserDetailsSchema } from "@/lib/models/zod .schema";
 import { fromZodError } from "zod-validation-error";
 import { User } from "@/lib/models/user.schema";
+import { auth } from "@/auth";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(req) {
   try {
@@ -53,11 +55,27 @@ export async function PUT(req) {
         StatusCodes.CONFLICT
       );
     }
+    revalidatePath("/dashboard");
     return successResponse(
       "Succesfully Updated",
       "Updated",
       StatusCodes.ACCEPTED
     );
+  } catch (error) {
+    return errorResponse(error.message, error.type, error.statusCode);
+  }
+}
+
+export async function GET(req) {
+  try {
+    const session = await auth();
+    var userId = session?.user?.id;
+    const registration = await User.findById(userId).select({
+      registrationCompleted: 1,
+    });
+    return successResponse("ok", {
+      status: Boolean(registration?.registrationCompleted),
+    });
   } catch (error) {
     return errorResponse(error.message, error.type, error.statusCode);
   }

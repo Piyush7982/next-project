@@ -18,7 +18,8 @@ export default async function SellerPurchaseRequest({ userId }) {
         </h4>
       </div>
 
-      <ScrollArea className="md:h-44  h-40  bg-popover    md:w-9/12 w-10/12 rounded-md border shadow ">
+      <ScrollArea className="md:h-32  h-40  bg-popover    md:w-9/12 w-10/12 rounded-md border shadow ">
+        {/* <ScrollArea className="md:h-44  h-40  bg-popover    md:w-9/12 w-10/12 rounded-md border shadow "> */}
         <div className="pb-2 w-11/12 mx-auto rounded-xl  flex flex-col items-center my-auto ">
           {requests.length > 0 &&
             requests.map((request) => {

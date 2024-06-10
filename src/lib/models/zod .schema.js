@@ -45,18 +45,24 @@ export const zodStationaryInputSchema = z.object({
     .string()
     .min(3, "Name should be at least 3 characters long")
     .max(30, "Name should be at most 30 characters long")
-    .regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid name"),
+    .regex(/^[a-zA-Z]+[a-zA-Z0-9]*$/i, "Invalid name"),
 
   description: z
     .string()
     .min(200, "Description should be at least 200 characters long")
     .max(400, "Description should be at most 400 characters long")
-    .regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid description"),
+    .regex(
+      /^(?=.*[a-zA-Z])([a-zA-Z0-9\s\.\,\;\:\!\?@#\$%\^&\*\(\)\-\+]+)$/i,
+      "Invalid description"
+    ),
   recommendedFor: z
     .string()
     .min(100, "RecommendedFor should be at least 100 characters long")
     .max(200, "RecommendedFor should be at most 200 characters long")
-    .regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid recommendedFor"),
+    .regex(
+      /^(?=.*[a-zA-Z])([a-zA-Z0-9\s\.\,\;\:\!\?@#\$%\^&\*\(\)\-\+]+)$/i,
+      "Invalid recommendedFor"
+    ),
   // tags: z.array(z.string().regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid tag")),
   price: z.number().min(0, "Price should be at least 0"),
 });
@@ -66,17 +72,23 @@ export const zodFlatInputSchema = z.object({
     .string()
     .min(3, "Name should be at least 3 characters long")
     .max(30, "Name should be at most 30 characters long")
-    .regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid name"),
+    .regex(/^[a-zA-Z]+[a-zA-Z0-9]*$/i, "Invalid name"),
   location: z
     .string()
     .min(20, "Location should be at least 3 characters long")
     .max(200, "Location should be at most 30 characters long")
-    .regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid location"),
+    .regex(
+      /^(?=.*[a-zA-Z])([a-zA-Z0-9\s\.\,\;\:\!\?@#\$%\^&\*\(\)\-\+]+)$/i,
+      "Invalid location"
+    ),
   description: z
     .string()
     .min(200, "Description should be at least 200 characters long")
     .max(400, "Description should be at most 400 characters long")
-    .regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid description"),
+    .regex(
+      /^(?=.*[a-zA-Z])([a-zA-Z0-9\s\.\,\;\:\!\?@#\$%\^&\*\(\)\-\+]+)$/i,
+      "Invalid description"
+    ),
   price: z.number().min(0, "Price should be at least 0"),
   // tags: z.array(
   //   z.string().regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid tag")

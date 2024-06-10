@@ -171,7 +171,7 @@ export default function Signup() {
         setEmailError("");
         setPasswordError("");
         setUsernameError("");
-        toast.success("Successfully Signedin", {
+        toast.success("Successfully Registered", {
           autoClose: 2000,
           theme: "colored",
         });

@@ -6,6 +6,8 @@ export default auth((req) => {
   const currentRoute = nextUrl.pathname;
   // console.log(req.auth?.user.id);
   const isAdmin = req?.auth?.user?.role === "Admin";
+  const isRegistered =
+    req?.auth?.user?.registrationCompleted === "false" ? false : true;
   //   console.log(isAdmin);
   // const isAdmin=
   //   //
@@ -15,11 +17,19 @@ export default auth((req) => {
   const loginRoute = "/login";
   const apiPrefix = "/api";
   const adminPrefix = "/admin";
+  const nonRegisterAllowedRoutes = ["/dashboard", "/profile", "/"];
+  const onlyRegisteredRoutes = [
+    "/search",
+    `/product/flat`,
+    "/product/stationary",
+    "/register-item",
+  ];
   //   //
-
+  // console.log(currentRoute);
   if (nextUrl.pathname.startsWith(apiPrefix)) {
     return null;
   }
+
   if (currentRoute.startsWith(adminPrefix)) {
     if (isLoggedin) {
       if (!isAdmin) {
@@ -34,7 +44,32 @@ export default auth((req) => {
   if (isAdmin && !currentRoute.startsWith(adminPrefix)) {
     return Response.redirect(new URL("/admin", nextUrl));
   }
+  if (isLoggedin && onlyRegisteredRoutes.includes(currentRoute)) {
+    if (!isRegistered) {
+      return Response.redirect(new URL("/profile", nextUrl));
+    }
 
+    return null;
+  }
+
+  // if (
+  //   !isLoggedin &&
+  //   currentRoute !== publicRoute &&
+  //   !authRoutes.includes(currentRoute)
+  // ) {
+  //   // console.log("first");
+  //   let callbackUrl = nextUrl.pathname;
+  //   if (nextUrl.search) {
+  //     callbackUrl += nextUrl.search;
+  //   }
+
+  //   const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+  //   // console.log(encodedCallbackUrl);
+
+  //   return Response.redirect(
+  //     new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+  //   );
+  // }
   if (authRoutes.includes(currentRoute)) {
     if (isLoggedin) {
       return Response.redirect(
@@ -53,18 +88,6 @@ export default auth((req) => {
     return null;
   }
 
-  //   if (!isLoggedin && currentRoute !== publicRoute) {
-  //     let callbackUrl = nextUrl.pathname;
-  //     if (nextUrl.search) {
-  //       callbackUrl += nextUrl.search;
-  //     }
-
-  //     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-
-  //     return Response.redirect(
-  //       new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-  //     );
-  //   }
   return null;
 });
 export const config = {

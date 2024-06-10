@@ -13,9 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSession } from "next-auth/react";
+
 export default function UpdateProfileForm({ userdetails }) {
   const router = useRouter();
-
+  const { update } = useSession();
   const { mobile, address, username, college } = userdetails;
   const [mobileNumber, setmobileNumber] = useState(mobile != 0 ? mobile : "");
 
@@ -89,7 +91,10 @@ export default function UpdateProfileForm({ userdetails }) {
           withCredentials: true,
         });
 
+        update({ registrationCompleted: "true", college: collegee });
+
         setformError("");
+
         toast.success("Successfully Updated", {
           autoClose: 2000,
           theme: "colored",

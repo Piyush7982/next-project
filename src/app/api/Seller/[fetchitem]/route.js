@@ -20,6 +20,7 @@ export async function GET(req, { params }) {
         lender: 0,
         __v: 0,
         _id: 0,
+        approvalStatus: 0,
       }
     );
     return successResponse("Found Succesfully", result, StatusCodes.OK);

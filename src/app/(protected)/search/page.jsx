@@ -18,6 +18,11 @@ export default async function ProductPage(props) {
   if (!session) {
     return redirect("/login");
   }
+
+  const user = session?.user;
+  // if (user?.registrationCompleted === "false") {
+  //   redirect("/profile");
+  // }
   const { searchParams } = props;
   const data = await fetchProductPage(searchParams?.type, searchParams?.id);
   if (!data) {

@@ -16,6 +16,7 @@ export const {
           role: credential?.role,
           id: credential?.userId,
           registrationCompleted: credential?.registrationCompleted,
+          college: credential?.college,
         };
 
         return user;
@@ -26,12 +27,17 @@ export const {
   trustHost: true,
   pages: { signIn: "/login" },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session?.registrationCompleted) {
+        // console.log("first");
+        token.registrationCompleted = session?.registrationCompleted;
+        token.college = session?.college;
+      } else if (user) {
         token.username = user?.username;
         token.role = user?.role;
         token.id = user?.id;
         token.registrationCompleted = user?.registrationCompleted;
+        token.college = user?.college;
       }
 
       return token;
@@ -43,6 +49,7 @@ export const {
           username: token?.username,
           id: token?.id,
           registrationCompleted: token?.registrationCompleted,
+          college: token?.college,
         };
       }
 

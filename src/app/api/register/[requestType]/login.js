@@ -34,7 +34,6 @@ export async function Login(req, res) {
         StatusCodes.CONFLICT
       );
     }
-
     const isCorrectPassword = await verifyPassword(password, user?.password);
     if (!isCorrectPassword) {
       return errorResponse(
@@ -49,6 +48,7 @@ export async function Login(req, res) {
       role: user?.role,
       userId: userid,
       registrationCompleted: user?.registrationCompleted,
+      college: user?.college,
 
       // redirectTo: "/",
 

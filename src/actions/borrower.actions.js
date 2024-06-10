@@ -7,6 +7,7 @@ import { Request } from "@/lib/models/Request.schema";
 import { auth } from "@/auth";
 
 import { successResponse } from "@/lib/utils/success.response";
+import { revalidatePath } from "next/cache";
 
 export async function createPurchaseRequest(id, type) {
   try {
@@ -39,8 +40,12 @@ export async function createPurchaseRequest(id, type) {
       Model: id,
       borrower: borrower,
     });
+    return;
   } catch (error) {
     console.log(error);
+    return;
+  } finally {
+    revalidatePath("/dashboard");
   }
 }
 export async function checkDuplicateRequest(userId, itemId) {

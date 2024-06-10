@@ -1,6 +1,7 @@
 "use server";
 
 import { Approval } from "@/lib/models/approval.schema";
+import { revalidatePath } from "next/cache";
 
 const { connecToDb } = require("@/lib/connectToDb");
 const { Request } = require("@/lib/models/Request.schema");
@@ -53,6 +54,8 @@ export async function updateRequestStatus(productId, status) {
   } catch (error) {
     console.log(error);
     return;
+  } finally {
+    revalidatePath("/dashboard");
   }
 }
 export async function createAdminApproval(productId, lender, onModel) {

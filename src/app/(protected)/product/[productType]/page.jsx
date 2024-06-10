@@ -17,6 +17,7 @@ import { notFound, redirect } from "next/navigation";
 import { modifyDate } from "@/lib/helper/dataModifier";
 import Link from "next/link";
 import Image from "next/image";
+import { auth } from "@/auth";
 
 // async function addBooks() {
 //   "use server";
@@ -42,7 +43,11 @@ import Image from "next/image";
 // await addBooks();
 
 export default async function Books(props) {
-  revalidatePath("/");
+  const session = await auth();
+  const user = session?.user;
+  // if (user?.registrationCompleted === "false") {
+  //   redirect("/profile");
+  // }
   const { searchParams } = props;
   const { params } = props;
   if (params.productType !== "flat" && params.productType !== "stationary") {

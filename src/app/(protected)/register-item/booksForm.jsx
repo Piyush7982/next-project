@@ -242,7 +242,7 @@ export default function BooksForm() {
           </div>
           <div className="space-y-1">
             <Label htmlFor="recommendedFor">
-              Target Audience{" "}
+              Target Audience / Recommended For{" "}
               <span className=" items-center font-light opacity-80 text-xs ml-3 gap-2 ">
                 {" "}
                 {recommendedFor.length}/200
