@@ -71,7 +71,7 @@ export default async function ProductCaraousell({
             <CarouselContent className="-ml-4 mr-1 ">
               {data?.length == 0 ? (
                 <CarouselItem className="  ml-2       pl-4">
-                  <div className=" max-sm:mx-auto border-muted border shadow-sm rounded-2xl text-center flex justify-center items-center        my-4  h-28    ">
+                  <div className=" max-sm:mx-auto border-muted border shadow-sm rounded-2xl text-center flex justify-center items-center        my-4  md:h-28 h-32 max-sm:px-2    ">
                     <h1>
                       {" "}
                       Sorry! No product is currently available for you, We will

@@ -31,16 +31,7 @@ export default async function Navbar() {
         <Link href="/" replace={true}>
           <h1 className="text-2xl mx-2  px-6 font-bold "> EduStation </h1>
         </Link>
-        {/* <Button className="font-bold" size="" variant="ghost">
-          Hello
-        </Button> */}
 
-        {/* {role === "Borrower" && isLoggedin && (
-          <DropdownMenuRadioGroupDemo role="Borrower" />
-        )}
-        {role === "Lender" && isLoggedin && (
-          <DropdownMenuRadioGroupDemo role="Lender" />
-        )} */}
         <ThemeToggle className=" ml-3 " />
         <MobileHamburger isAdmin={isAdmin} isLoggedin={isLoggedin} />
       </div>
@@ -55,7 +46,7 @@ export default async function Navbar() {
             </Link>
           </>
         )}
-        {!isAdmin && (
+        {!isAdmin && isLoggedin && (
           <>
             <Link href="/profile">
               <Button className="" size="" variant="ghost">
@@ -65,6 +56,11 @@ export default async function Navbar() {
             <Link replace={true} href="/dashboard">
               <Button className="" size="" variant="ghost">
                 Dashboard
+              </Button>
+            </Link>
+            <Link replace={true} href="/order-summary">
+              <Button className="" size="" variant="ghost">
+                Orders
               </Button>
             </Link>
           </>

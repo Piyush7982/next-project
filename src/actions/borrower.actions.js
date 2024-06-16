@@ -121,3 +121,32 @@ export async function fetchBorrowRequests(userId) {
     return requests;
   }
 }
+export async function fetchCompleteBorrowRequests(userId, skip) {
+  let requests = [];
+  try {
+    await connecToDb();
+    requests = await Request.find({
+      borrower: userId,
+    })
+
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate("Model", {
+        name: 1,
+        description: 1,
+        price: 1,
+        image: 1,
+        availableCollege: 1,
+      })
+      .populate("lender", {
+        username: 1,
+
+        email: 1,
+      });
+
+    return requests;
+  } catch (error) {
+    console.log(error);
+    return requests;
+  }
+}

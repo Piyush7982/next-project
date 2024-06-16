@@ -74,3 +74,32 @@ export async function createAdminApproval(productId, lender, onModel) {
     return;
   }
 }
+export async function fetchCompleteLendingRequests(userId, skip) {
+  let requests = [];
+  try {
+    await connecToDb();
+    requests = await Request.find({
+      lender: userId,
+    })
+
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate("Model", {
+        name: 1,
+        description: 1,
+        price: 1,
+        image: 1,
+        availableCollege: 1,
+      })
+      .populate("borrower", {
+        username: 1,
+        mobile: 1,
+        email: 1,
+      });
+
+    return requests;
+  } catch (error) {
+    console.log(error);
+    return requests;
+  }
+}

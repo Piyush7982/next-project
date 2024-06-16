@@ -11,7 +11,6 @@ import { Flat } from "@/lib/models/flat.schema";
 import { User } from "@/lib/models/user.schema";
 import { auth } from "@/auth";
 import { fromZodError } from "zod-validation-error";
-import { imageUpload } from "@/lib/helper/uploadImage";
 import { uploadImageonCloudinary } from "@/lib/helper/cloudinary.config";
 import { createAdminApproval } from "@/actions/seller.actions";
 

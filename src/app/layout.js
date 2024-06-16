@@ -27,13 +27,13 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
-            <body className={inter.className}>
+            <div className={inter.className}>
               <Navbar />
               <ToastContainer />
 
               <div className="min-h-screen">{children}</div>
               <Footer />
-            </body>
+            </div>
             {/* <ThemeSwitcher /> */}
           </ThemeProvider>
         </body>

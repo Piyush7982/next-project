@@ -44,6 +44,11 @@ export default function MobileHamburger({ isAdmin, isLoggedin }) {
                   Dashboard
                 </Button>
               </Link>
+              <Link replace={true} href="/order-summary">
+                <Button className="" size="" variant="ghost">
+                  Orders
+                </Button>
+              </Link>
             </>
           )}
           {!isLoggedin && (
