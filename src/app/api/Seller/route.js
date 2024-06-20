@@ -21,6 +21,7 @@ export async function POST(req) {
       return redirect("/login");
     }
     const formdata = await req.formData();
+    // console.log(formdata);
     const availableCollege = session?.user?.college;
     const img = formdata.get("image");
     const fileBuffer = await img.arrayBuffer();
@@ -54,6 +55,8 @@ export async function POST(req) {
       );
     }
 
+    // console.log(data?.tags.split(","));
+
     const username = session?.user?.username;
 
     await connecToDb();
@@ -79,11 +82,20 @@ export async function POST(req) {
       lender: isValidUser?._id,
       image: imageLink,
       availableCollege: availableCollege,
+      tags: [],
     });
     const productId = result?._id;
+
     const onModel = data?.model === "Flat" ? "flats" : "stationaries";
+
+    const tags = data?.tags.split(",");
+    await Promise.all(
+      tags.map(async (tag) => {
+        await model.findOneAndUpdate(productId, { $push: { tags: tag } });
+      })
+    );
     await createAdminApproval(productId, isValidUser?._id, onModel);
-    // console.log(result?._id);
+
     return successResponse(
       "Succesfully Created",
       "Created",

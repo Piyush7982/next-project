@@ -23,7 +23,7 @@ export default function BooksForm() {
   const [name, setname] = useState("");
   const [description, setdescrition] = useState("");
   const [recommendedFor, setrecommendedFor] = useState("");
-  const [tags, settags] = useState([]);
+  const [tags, settags] = useState("");
   const [price, setprice] = useState("");
 
   const [image, setImage] = useState(null);
@@ -89,6 +89,7 @@ export default function BooksForm() {
         formData.append("price", Number(price));
         formData.append("model", "Stationary");
         formData.append("image", image);
+        formData.append("tags", tags);
         // const payload = {
         //   name: name,
         //   description: description,
@@ -112,6 +113,9 @@ export default function BooksForm() {
         setrecommendedFor("");
         setprice("");
         settags([]);
+        setImage(null);
+        setPreview(groot);
+
         //   router.replace("/dashboard");
         //   router.refresh("/dashboard");
       } catch (error) {
@@ -136,13 +140,14 @@ export default function BooksForm() {
       description.length > 200 &&
       price > 0 &&
       recommendedFor.length > 100 &&
-      image !== null
+      image !== null &&
+      tags.length > 1
     ) {
       setvalidForm(true);
     } else {
       setvalidForm(false);
     }
-  }, [name, description, price, recommendedFor, image]);
+  }, [name, description, price, recommendedFor, image, tags]);
 
   return (
     <form onSubmit={handleOnSubmit}>
@@ -280,7 +285,7 @@ export default function BooksForm() {
               name="tags"
               type="text"
               id="tags"
-              placeholder="Enter tags seperated by  comma(' , ') "
+              placeholder=" #book, #adventure, #science"
               onChange={handletagsChange}
             />
           </div>

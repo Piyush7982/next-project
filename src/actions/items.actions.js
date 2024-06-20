@@ -6,14 +6,23 @@ import { Approval } from "@/lib/models/approval.schema";
 import { Flat } from "@/lib/models/flat.schema";
 import { Stationary } from "@/lib/models/stationary.schema";
 
-export async function fetchBooks(page, limit, type) {
+export async function fetchBooks(page, limit, type, searchName) {
   connecToDb();
   try {
     const session = await auth();
     const availableCollege = session?.user?.college;
     const model = type === "stationary" ? Stationary : Flat;
+    const query = {
+      approvalStatus: "Approved",
+      availableCollege: availableCollege,
+    };
+    // console.log(searchName);
+    if (searchName) {
+      const nameRegex = new RegExp(searchName.split("").join(".*"), "i");
+      query.name = { $regex: nameRegex };
+    }
     const books = await model
-      .find({ approvalStatus: "Approved", availableCollege: availableCollege })
+      .find(query)
       .limit(limit)
       .skip((page - 1) * limit);
     return books;

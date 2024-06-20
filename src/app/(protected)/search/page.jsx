@@ -50,7 +50,11 @@ export default async function ProductPage(props) {
           <div className="flex flex-col md:-ml-4     min-h-80  md:col-span-9 col-span-1 md:col-start-4 md:pl-16 pt-1 sm:gap-5 max-sm:gap-9 ">
             <div className="font-bold text-5xl capitalize">{data?.name}</div>
             <div className="font-medium text-muted-foreground max-sm:-mt-7 -mt-4 opacity-90">
-              #story,#adventure,#tale,#jeanlumier
+              {data?.tags &&
+                data?.tags.map((tag) => {
+                  return tag + " ";
+                })}
+              {!data?.tags && <>#story,#adventure,#tale,#jeanlumier</>}
             </div>
             {searchParams?.type === "Flat" && (
               <div className="container mx-0 px-0 min-h-10 max-h-32 break-words capitalize">

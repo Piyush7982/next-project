@@ -18,29 +18,8 @@ import { modifyDate } from "@/lib/helper/dataModifier";
 import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/auth";
-
-// async function addBooks() {
-//   "use server";
-//   try {
-//     connecToDb();
-//     for (let i = 1; i < 30; i++) {
-// await Stationary.create({
-//   name: "random",
-//   description: "description sdfjkhsdf",
-//   recommendedFor: "no one ",
-//   tags: ["tag1", "tag2"],
-//   lender: "65fee6fbd151da7641d0b017",
-//   price: "30" + i,
-// });
-// await Stationary.deleteMany({
-//   name: "fsd",
-// });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-// await addBooks();
+import SearchBar from "./searchBar";
+import NotFound from "./not-found";
 
 export default async function Books(props) {
   const session = await auth();
@@ -53,25 +32,33 @@ export default async function Books(props) {
   if (params.productType !== "flat" && params.productType !== "stationary") {
     notFound();
   }
+  const searchName = searchParams.name ? searchParams.name : false;
+
   const page = searchParams.page ? searchParams.page : 1;
   const limit = 12;
-  const data = await fetchBooks(page, limit, params.productType);
+  const data = await fetchBooks(page, limit, params.productType, searchName);
   if (data?.length == 0) {
-    notFound();
+    // notFound();
+    return <NotFound />;
   }
+
   return (
-    <div className="min-h-screen  flex flex-col items-center   space-y-24 sm:pt-20 pt-40 mb-5 ">
-      <div className="container flex flex-col gap-5  ">
-        <h1 className="font-bold md:text-4xl text-2xl  ">
-          {" "}
-          Browser All {params.productType === "flat"
-            ? "Flats"
-            : "Stationary"}{" "}
-          <span className="text-sm font-normal ">
-            (results showing for
-            {<span className="font-bold"> {user?.college}</span>})
-          </span>
-        </h1>
+    <div className="min-h-screen  flex flex-col items-center   space-y-24 sm:pt-10 pt-20 mb-5 ">
+      <div className="container flex flex-col gap-16   ">
+        <div className="flex max-sm:flex-col items-center  max-sm:gap-6 sm:justify-between">
+          <h1 className="font-bold md:text-4xl text-2xl  ">
+            {" "}
+            Browser All {params.productType === "flat"
+              ? "Flats"
+              : "Stationary"}{" "}
+            <span className="text-sm font-normal ">
+              (results showing for
+              {<span className="font-bold"> {user?.college}</span>})
+            </span>
+          </h1>
+          <SearchBar />
+        </div>
+
         <div className="grid grid-cols-12 gap-5 ">
           {data &&
             data.map((book) => {

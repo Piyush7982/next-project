@@ -63,6 +63,20 @@ export const zodStationaryInputSchema = z.object({
       /^(?=.*[a-zA-Z])([a-zA-Z0-9\s\.\,\;\:\!\?@#\$%\^&\*\(\)\-\+]+)$/i,
       "Invalid recommendedFor"
     ),
+  tags: z
+    .string()
+    .min(1, "Tags should be 1 charater minimum")
+    .max(70, "Tags should be 70 characters long")
+    .refine(
+      (value) => {
+        const tags = value.split(",");
+        return tags.every((tag) => /^#[a-zA-Z0-9]+$/.test(tag));
+      },
+      {
+        message:
+          "Invalid tags format. Tags should be in the form of '#tag1,#tag2,#tag3'.",
+      }
+    ),
   // tags: z.array(z.string().regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid tag")),
   price: z.number().min(0, "Price should be at least 0"),
 });
@@ -93,6 +107,21 @@ export const zodFlatInputSchema = z.object({
   // tags: z.array(
   //   z.string().regex(/^[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$/, "Invalid tag")
   // ),
+  tags: z
+
+    .string()
+    .min(1, "Tags should be 1 charater minimum")
+    .max(70, "Tags should be 70 characters long")
+    .refine(
+      (value) => {
+        const tags = value.split(",");
+        return tags.every((tag) => /^#[a-zA-Z0-9]+$/.test(tag));
+      },
+      {
+        message:
+          "Invalid tags format. Tags should be in the form of '#tag1,#tag2,#tag3'.",
+      }
+    ),
   capacity: z
     .number()
     .min(1, "Capacity should be at least 1")

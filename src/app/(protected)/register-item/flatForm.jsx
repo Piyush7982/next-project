@@ -23,7 +23,7 @@ export default function FlatForm() {
   const [name, setname] = useState("");
   const [description, setdescrition] = useState("");
   const [location, setlocation] = useState("");
-  const [tags, settags] = useState([]);
+  const [tags, settags] = useState("");
   const [price, setprice] = useState("");
   const [capacity, setcapacity] = useState(1);
   const [image, setImage] = useState(null);
@@ -93,17 +93,7 @@ export default function FlatForm() {
         formData.append("capacity", Number(capacity));
         formData.append("model", "Flat");
         formData.append("image", image);
-        // const payload = {
-        //   name: name,
-        //   description: description,
-        //   location: location,
-        //   price: price - 0,
-        //   tags: tags,
-        //   capacity: capacity,
-        //   model: "Flat",
-        // };
-        // const data = JSON.stringify(payload);
-        // console.log(data);
+        formData.append("tags", tags);
 
         const result = await axios.post("/api/Seller", formData, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -116,12 +106,11 @@ export default function FlatForm() {
         setdescrition("");
         setcapacity(1);
         setprice("");
-        settags([]);
+        settags("");
         setlocation("");
-        //   router.replace("/dashboard");
-        //   router.refresh("/dashboard");
+        setImage(null);
+        setPreview(groot);
       } catch (error) {
-        // console.log(error);
         if (
           error?.response?.data?.Type === "authorisation error" ||
           error?.response?.data?.Type === "ZodValidationError"
@@ -144,13 +133,14 @@ export default function FlatForm() {
       price > 0 &&
       location.length > 20 &&
       capacity >= 1 &&
-      image !== null
+      image !== null &&
+      tags.length > 1
     ) {
       setvalidForm(true);
     } else {
       setvalidForm(false);
     }
-  }, [name, description, price, location, capacity, image]);
+  }, [name, description, price, location, capacity, image, tags]);
 
   return (
     <form onSubmit={handleOnSubmit}>
@@ -311,7 +301,7 @@ export default function FlatForm() {
               name="tags"
               type="text"
               id="tags"
-              placeholder="Enter tags seperated by  comma(' , ') "
+              placeholder=" #book, #adventure, #science"
               onChange={handletagsChange}
             />
           </div>
