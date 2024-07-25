@@ -45,7 +45,7 @@ export const zodStationaryInputSchema = z.object({
     .string()
     .min(3, "Name should be at least 3 characters long")
     .max(30, "Name should be at most 30 characters long")
-    .regex(/^[a-zA-Z]+[a-zA-Z0-9]*$/i, "Invalid name"),
+    .regex(/^[a-zA-Z][a-zA-Z0-9 _]*[a-zA-Z0-9]$/i, "Invalid name"),
 
   description: z
     .string()
@@ -86,7 +86,7 @@ export const zodFlatInputSchema = z.object({
     .string()
     .min(3, "Name should be at least 3 characters long")
     .max(30, "Name should be at most 30 characters long")
-    .regex(/^[a-zA-Z]+[a-zA-Z0-9]*$/i, "Invalid name"),
+    .regex(/^[a-zA-Z][a-zA-Z0-9 _]*[a-zA-Z0-9]$/i, "Invalid name"),
   location: z
     .string()
     .min(20, "Location should be at least 3 characters long")
