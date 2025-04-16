@@ -69,7 +69,7 @@ export default async function Books(props) {
                       params.productType === "flat" ? "Flat" : "Stationary"
                     }&name=${book?.name}&id=${book?._id}`}
                   >
-                    <Card className="sm:h-72 h-52 bg-secondary mx-1  flex flex-col items-center transition-all duration-300 delay-0 hover:cursor-pointer  ease-in-out hover:scale-105">
+                    <Card className="sm:h-72 h-52 relative border-none shadow-none mx-1  flex flex-col items-center transition-all duration-300 delay-0 hover:cursor-pointer  ease-in-out hover:shadow-md">
                       {/* <div className="w-full h-4/6 bg-destructive rounded-t-md  overflow-visible"></div> */}
                       <Image
                         src={
@@ -77,19 +77,18 @@ export default async function Books(props) {
                             ? book.image
                             : "https://th.bing.com/th/id/OIP.RYDmKYNwd0vEueh_4VLRdAAAAA?rs=1&pid=ImgDetMain"
                         }
-                        className=" h-[88%]  pb-0 rounded-t-lg object-cover "
+                        className="   pb-0 rounded-lg object-cover "
                         // objectFit="contain"
-                        height={60}
-                        width={320}
+                        fill
                         alt="product"
                         priority="false"
                       />
-                      <CardFooter className="flex h-[12%]  items-center justify-between m-0 p-0 sm:pl-5      w-full overflow-clip pl-2  ">
-                        <CardTitle className=" text-xl sm:text-2xl   text-accent-foreground w-9/12   overflow-clip  max-sm:w-11/12 flex    capitalize mr-2 ">
+                      <CardFooter className="flex h-[20%] rounded-b-md  items-center justify-between m-0 p-0 sm:pl-5 bg-secondary   absolute bottom-0     w-full overflow-clip pl-2  ">
+                        <CardTitle className=" text-lg sm:text-lg break-words truncate flex-nowrap   text-accent-foreground w-9/12   overflow-clip  max-sm:w-11/12  flex    capitalize mr-2 ">
                           {book?.name}
                         </CardTitle>
 
-                        <div className="flex max-sm:hidden items-center text-sm font-semibold text-muted-foreground gap-1 w-3/12">
+                        <div className="flex max-sm:hidden items-center text-sm font-semibold  gap-1 w-3/12">
                           <IndianRupee size={17} />
                           {book?.price}
                         </div>
@@ -97,20 +96,6 @@ export default async function Books(props) {
                             <ListTodo size={20} /> {modifyDate(book?.createdAt)}
                           </div> */}
                       </CardFooter>
-                      {/* <CardFooter className="flex h-[18%] flex-col items-start p-0 sm:pl-5     w-full overflow-clip pl-2 sm:mb-1 ">
-                        <CardTitle className=" text-xl  text-accent-foreground   overflow-clip  max-sm:w-11/12 flex    capitalize mr-2 ">
-                          {book?.name}
-                        </CardTitle>
-                        <div className="  overflow-clip w-10/12 flex items-center justify-start gap-7 text-muted-foreground    max-sm:hidden text-xs font-bold  ">
-                          <div className="flex items-center gap-1">
-                            <IndianRupee size={17} />
-                            {book?.price}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <ListTodo size={20} /> {modifyDate(book?.createdAt)}
-                          </div>
-                        </div>
-                      </CardFooter> */}
                     </Card>
                   </Link>
                 </div>

@@ -23,9 +23,11 @@ export async function createPurchaseRequest(id, type) {
     // const r = await Stationary.findOne({ price: 3020 }).populate("lender");
 
     // console.log(r);
-    const isValidProduct = await model.findById(id).populate("lender", ["_id"]);
+    const isValidProduct = await model
+      .findById(id)
+      .populate("lender", { _id: 1 });
     //   mongoose.mongo.BSON.BSONValue(id) hereee
-    // console.log(isValidProduct);
+    console.log(isValidProduct);
     if (!isValidProduct) {
       return;
     }

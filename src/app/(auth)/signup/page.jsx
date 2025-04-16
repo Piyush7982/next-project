@@ -1,8 +1,10 @@
 "use client";
 import { toast } from "react-toastify";
-
-import CustomForm from "@/components/Form";
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -12,18 +14,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import AuthLayout from "@/components/Auth/AuthLayout";
+import { Loader2 } from "lucide-react";
 
 export default function Signup() {
   const router = useRouter();
   const username_regex = "^(?=.*[a-zA-Z])(?=.*[0-9])[A-Za-z0-9]+$";
   const email_regex =
     /^(?=.*[a-zA-Z])[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z]+\.[a-zA-Z]+$/;
+  const name_regex = /^[a-zA-Z\s]{2,30}$/;
 
   const [validForm, setvalidForm] = useState(false);
   const [formError, setformError] = useState("");
+
+  const [name, setName] = useState("");
+  const [isValidName, setIsValidName] = useState(false);
+  const [nameError, setNameError] = useState("");
+
   const [username, setUsername] = useState("");
   const [isValidUsername, setisValidUsername] = useState(false);
   const [usernameError, setUsernameError] = useState("");
@@ -39,20 +46,37 @@ export default function Signup() {
 
   const [isPending, startTransition] = useTransition();
 
+  function handleNameChange(event) {
+    setName(event.target.value);
+  }
+
   function handleUsernameChange(event) {
     event.target.value = event.target.value.replace(/\s/g, "");
-
     setUsername(event.target.value);
   }
+
   function handleEmailChange(event) {
     event.target.value = event.target.value.replace(/\s/g, "");
-
     setEmail(event.target.value);
   }
+
   function handlePasswordChange(event) {
     event.target.value = event.target.value.replace(/\s/g, "");
-
     setPassword(event.target.value);
+  }
+
+  function validateName() {
+    if (name.length < 2 || name.length > 30) {
+      setNameError("Name must be 2-30 characters long");
+      setIsValidName(false);
+    } else if (!name.match(name_regex)) {
+      setNameError("Name can only contain letters and spaces");
+      setIsValidName(false);
+    } else {
+      setNameError("");
+      setformError("");
+      setIsValidName(true);
+    }
   }
 
   function validateUsername() {
@@ -65,10 +89,10 @@ export default function Signup() {
     } else {
       setUsernameError("");
       setformError("");
-
       setisValidUsername(true);
     }
   }
+
   function validateEmail() {
     if (email.length < 5 || email.length > 30) {
       setEmailError("Email should be  5-35 characters Long");
@@ -82,6 +106,7 @@ export default function Signup() {
       setformError("");
     }
   }
+
   function validatePassword() {
     if (password.length < 8 || password.length > 20) {
       setPasswordError("Password must be  8-20 characters long");
@@ -93,69 +118,44 @@ export default function Signup() {
   }
 
   useEffect(() => {
+    validateName(name);
+  }, [name]);
+
+  useEffect(() => {
     validateUsername(username);
   }, [username]);
+
   useEffect(() => {
     validateEmail(email);
   }, [email]);
+
   useEffect(() => {
     validatePassword(password);
   }, [password]);
 
   useEffect(() => {
-    if (isValidEmail && isValidUsername && isValidPassword) {
+    if (isValidName && isValidEmail && isValidUsername && isValidPassword) {
       setvalidForm(true);
     } else {
       setvalidForm(false);
     }
-  }, [isValidEmail, isValidUsername, isValidPassword]);
+  }, [isValidName, isValidEmail, isValidUsername, isValidPassword]);
+
   useEffect(() => {
+    setNameError("");
     setEmailError("");
     setUsernameError("");
     setPasswordError("");
     setformError("");
   }, []);
 
-  const inputs = [
-    {
-      id: "username",
-      name: "username",
-      type: "text",
-      placeholder: "Username",
-      value: username,
-      onChange: handleUsernameChange,
-      error: usernameError,
-      maxLength: 20,
-    },
-    {
-      id: "email",
-      name: "email",
-      type: "text",
-      placeholder: "email",
-      value: email,
-      onChange: handleEmailChange,
-      error: emailError,
-      maxLength: 35,
-    },
-    {
-      id: "password",
-      name: "password",
-
-      type: "password",
-      placeholder: "Password",
-      value: password,
-      onChange: handlePasswordChange,
-      error: passwordError,
-      maxLength: 20,
-    },
-  ];
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // toast.loading("Creating", { isLoading: isPending });
 
     startTransition(async () => {
       try {
         const user = {
+          name: name,
           username: username,
           email: email,
           password: password,
@@ -171,6 +171,7 @@ export default function Signup() {
         setEmailError("");
         setPasswordError("");
         setUsernameError("");
+        setNameError("");
         toast.success("Successfully Registered", {
           autoClose: 2000,
           theme: "colored",
@@ -185,44 +186,105 @@ export default function Signup() {
         } else {
           console.error(error);
         }
-
         return;
       }
     });
   };
 
   return (
-    <div className="flex justify-center w-full items-center h-screen bg-accent ">
-      <CustomForm
-        formError={formError}
-        className=""
-        formName="Signup"
-        buttonText="Signup"
-        inputs={inputs}
-        isValidForm={validForm}
-        handleSubmit={handleSubmit}
-        disabled={isPending}
-        footerText="Already Have An Account"
-        footerTextButtonType="Login"
-        footerNavigationLink="/login"
-        // action={SignUpAction}
-      >
-        <Select
-          onValueChange={(value) => setrole(value)}
-          defaultValue={role}
-          value={role}
-          name="role"
+    <AuthLayout type="signup">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {formError && (
+          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+            {formError}
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Full Name</label>
+          <Input
+            type="text"
+            placeholder="Enter your full name"
+            value={name}
+            onChange={handleNameChange}
+            className={nameError ? "border-destructive" : ""}
+          />
+          {nameError && <p className="text-sm text-destructive">{nameError}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Username</label>
+          <Input
+            type="text"
+            placeholder="Choose a username"
+            value={username}
+            onChange={handleUsernameChange}
+            className={usernameError ? "border-destructive" : ""}
+          />
+          {usernameError && (
+            <p className="text-sm text-destructive">{usernameError}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Email</label>
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={handleEmailChange}
+            className={emailError ? "border-destructive" : ""}
+          />
+          {emailError && (
+            <p className="text-sm text-destructive">{emailError}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Password</label>
+          <Input
+            type="password"
+            placeholder="Create a password"
+            value={password}
+            onChange={handlePasswordChange}
+            className={passwordError ? "border-destructive" : ""}
+          />
+          {passwordError && (
+            <p className="text-sm text-destructive">{passwordError}</p>
+          )}
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Role</label>
+          <Select value={role} onValueChange={setrole}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Role</SelectLabel>
+                <SelectItem value="Buyer">Buyer</SelectItem>
+                <SelectItem value="Seller">Seller</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!validForm || isPending}
         >
-          <SelectTrigger className="mt-4">
-            <SelectValue placeholder="Select a Role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Seller">Lender</SelectItem>
-            <SelectItem value="Buyer">Borrower</SelectItem>
-          </SelectContent>
-        </Select>
-        {/* <h1>sdjfdsnkafdklfmdlkm</h1> */}
-      </CustomForm>
-    </div>
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating account...
+            </>
+          ) : (
+            "Create Account"
+          )}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 }

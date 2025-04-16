@@ -36,7 +36,7 @@ export default async function ProductPage(props) {
         <div className="grid  md:grid-cols-12 grid-cols-1 gap-2 max-sm:gap-8    ">
           {/* <div className="flex items-center justify-center min-h-96 gap-3"> */}
           <Image
-            className="bg-white h-80  shadow-primary shadow-md     rounded-md md:col-span-3 col-span-1 md:col-start-1 "
+            className="bg-white h-80       rounded-md md:col-span-3 col-span-1 md:col-start-1 "
             src={
               data?.image
                 ? data.image

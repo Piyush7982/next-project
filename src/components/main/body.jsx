@@ -9,7 +9,7 @@ import {
 import { BadgeEuro } from "lucide-react";
 import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 import Image from "next/image";
-// import aim from "../../../public/aim.jgp";
+import aim from "../../../public/frontmain.jpg";
 
 export default function Mainbody() {
   return (
@@ -20,9 +20,7 @@ export default function Mainbody() {
             className="bg-primary h-72 rounded-xl md:col-span-1 object-cover mx-auto  "
             height={350}
             width={200}
-            src={
-              "https://th.bing.com/th/id/OIG3.At4fpmsqfDCY7qsYPGxZ?w=270&h=270&c=6&r=0&o=5&dpr=1.4&pid=ImgGn"
-            }
+            src={aim}
             alt="image"
           />
           <div className="md:col-span-3 text-wrap ml-2   h-full ">

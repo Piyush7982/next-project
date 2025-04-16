@@ -1,115 +1,92 @@
 "use client";
-import CustomForm from "@/components/Form";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useRouter, redirect } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
 import { toast } from "react-toastify";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import AuthLayout from "@/components/Auth/AuthLayout";
+import { Loader2 } from "lucide-react";
 
-function Login() {
+export default function Login() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
-
-  const [formError, setformError] = useState("");
   const [isPending, startTransition] = useTransition();
-
+  const [formError, setFormError] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [validForm, setvalidForm] = useState(false);
-
-  function handleUsernameChange(event) {
-    event.target.value = event.target.value.replace(/\s/g, "");
-    setUsername(event.target.value);
-  }
-  function handlePasswordChange(event) {
-    setPassword(event.target.value);
-  }
-
-  useEffect(() => {
-    if (username.length > 0 && password.length > 0) {
-      setvalidForm(true);
-    } else {
-      setvalidForm(false);
-    }
-  }, [username, password]);
-  useEffect(() => {
-    setformError("");
-  }, [username]);
-
-  const inputs = [
-    {
-      id: "username",
-      name: "username",
-      type: "text",
-      placeholder: "Username",
-      value: username,
-      onChange: handleUsernameChange,
-      maxLength: 20,
-    },
-    {
-      id: "password",
-      name: "password",
-      type: "password",
-      placeholder: "Password",
-      value: password,
-      onChange: handlePasswordChange,
-      maxLength: 20,
-    },
-  ];
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     startTransition(async () => {
       try {
-        const user = {
-          username: username,
+        const response = await axios.post(
+          "/api/auth/login",
+          { email, password },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
 
-          password: password,
-        };
-        const data = JSON.stringify(user);
-
-        const result = await axios.post("/api/register/login", data, {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-
-        setformError("");
-        router.replace("/dashboard");
-        router.refresh("/dashboard");
-        // redirect("/dashboard");
-        location.reload();
-      } catch (error) {
-        if (
-          error?.response?.data?.Type === "authorisation error" ||
-          error?.response?.data?.Type === "ZodValidationError"
-        ) {
-          setformError(error?.response?.data?.Message);
-        } else {
-          console.error(error);
+        if (response.data.success) {
+          toast.success("Successfully logged in", {
+            autoClose: 2000,
+            theme: "colored",
+          });
+          router.push("/dashboard");
         }
-
-        return;
+      } catch (error) {
+        if (error.response?.data?.message) {
+          setFormError(error.response.data.message);
+        } else {
+          setFormError("An error occurred. Please try again.");
+        }
       }
     });
   };
+
   return (
-    <div className="flex justify-center w-full items-center h-screen bg-accent ">
-      <CustomForm
-        formError={formError}
-        className=" py-5 "
-        formName="Login"
-        buttonText="Submit"
-        inputs={inputs}
-        isValidForm={validForm}
-        handleSubmit={handleSubmit}
-        // action={LoginAction}
-        disabled={isPending}
-        footerText="Not a user ? Join Us"
-        footerTextButtonType="Signup"
-        footerNavigationLink="/signup"
-      />
-    </div>
+    <AuthLayout type="login">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {formError && (
+          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+            {formError}
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Email</label>
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Password</label>
+          <Input
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign In"
+          )}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 }
-
-export default Login;
