@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     remotePatterns: [{ hostname: "**", protocol: "https" }],
+    unoptimized: true,
   },
 };
 

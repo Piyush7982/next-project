@@ -1,6 +1,6 @@
 "use client";
 import { toast } from "react-toastify";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
@@ -65,7 +65,7 @@ export default function Signup() {
     setPassword(event.target.value);
   }
 
-  function validateName() {
+  const validateName = useCallback(() => {
     if (name.length < 2 || name.length > 30) {
       setNameError("Name must be 2-30 characters long");
       setIsValidName(false);
@@ -77,9 +77,9 @@ export default function Signup() {
       setformError("");
       setIsValidName(true);
     }
-  }
+  }, [name, name_regex]);
 
-  function validateUsername() {
+  const validateUsername = useCallback(() => {
     if (username.length < 5 || username.length > 20) {
       setUsernameError("Username must be 5-20 characters long");
       setisValidUsername(false);
@@ -91,9 +91,9 @@ export default function Signup() {
       setformError("");
       setisValidUsername(true);
     }
-  }
+  }, [username, username_regex]);
 
-  function validateEmail() {
+  const validateEmail = useCallback(() => {
     if (email.length < 5 || email.length > 30) {
       setEmailError("Email should be  5-35 characters Long");
       setisValidEmail(false);
@@ -105,9 +105,9 @@ export default function Signup() {
       setisValidEmail(true);
       setformError("");
     }
-  }
+  }, [email, email_regex]);
 
-  function validatePassword() {
+  const validatePassword = useCallback(() => {
     if (password.length < 8 || password.length > 20) {
       setPasswordError("Password must be  8-20 characters long");
       setisValidPassword(false);
@@ -115,23 +115,23 @@ export default function Signup() {
       setPasswordError("");
       setisValidPassword(true);
     }
-  }
-
-  useEffect(() => {
-    validateName(name);
-  }, [name]);
-
-  useEffect(() => {
-    validateUsername(username);
-  }, [username]);
-
-  useEffect(() => {
-    validateEmail(email);
-  }, [email]);
-
-  useEffect(() => {
-    validatePassword(password);
   }, [password]);
+
+  useEffect(() => {
+    validateName();
+  }, [validateName]);
+
+  useEffect(() => {
+    validateUsername();
+  }, [validateUsername]);
+
+  useEffect(() => {
+    validateEmail();
+  }, [validateEmail]);
+
+  useEffect(() => {
+    validatePassword();
+  }, [validatePassword]);
 
   useEffect(() => {
     if (isValidName && isValidEmail && isValidUsername && isValidPassword) {

@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { getUserMessages } from "@/actions/message.actions";
+import { getUserConversations } from "@/actions/message.actions";
 import MessagesClient from "./MessagesClient";
 
 export default async function MessagesPage() {
@@ -9,7 +9,9 @@ export default async function MessagesPage() {
     return redirect("/login?error=SessionExpired");
   }
 
-  const messages = await getUserMessages();
+  const conversations = await getUserConversations();
 
-  return <MessagesClient initialMessages={messages} session={session} />;
+  return (
+    <MessagesClient initialConversations={conversations} session={session} />
+  );
 }

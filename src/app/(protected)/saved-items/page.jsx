@@ -52,7 +52,7 @@ export default function SavedItemsPage() {
     } else if (status === "authenticated") {
       fetchSavedItems(); // Initial fetch
     }
-  }, [session, status, router]);
+  }, [session, status, router, fetchSavedItems]);
 
   // Handler for unsaving an item
   const handleUnsave = (listingId) => {
@@ -104,7 +104,7 @@ export default function SavedItemsPage() {
         {!isLoading && savedItems.length === 0 && !error && (
           <div className="bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-sm text-center">
             <p className="text-gray-500 dark:text-gray-400">
-              You haven't saved any items yet.
+              You haven&apos;t saved any items yet.
             </p>
             <Link href="/search" className="mt-4 inline-block">
               <Button variant="outline">Start Browsing</Button>

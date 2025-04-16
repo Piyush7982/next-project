@@ -132,7 +132,7 @@ export default function Navbar() {
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/profile", label: "Profile", icon: User },
       { href: "/search", label: "Browse", icon: Search },
-      { href: "/saved-items", label: "Saved Items", icon: Bookmark },
+      // { href: "/saved-items", label: "Saved Items", icon: Bookmark },
       { href: "/messages", label: "Messages", icon: MessageSquare },
     ];
   } else if (user) {
@@ -177,7 +177,7 @@ export default function Navbar() {
               );
             })}
 
-            {!user &&
+            {/* {!user &&
               loggedOutSpecificItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
@@ -189,7 +189,7 @@ export default function Navbar() {
                     <IconComponent className="mr-1 h-4 w-4" /> {item.label}
                   </Link>
                 );
-              })}
+              })} */}
           </div>
 
           <div className="flex items-center space-x-4">

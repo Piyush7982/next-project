@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Image as ImageIcon, Paperclip } from "lucide-react";
+import Image from "next/image";
 
 const MessageChat = ({
   conversation,
@@ -57,15 +58,13 @@ const MessageChat = ({
     <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <Avatar>
-            <AvatarImage
-              src={conversation?.otherUser?.image}
-              alt={conversation?.otherUser?.name}
-            />
-            <AvatarFallback>
-              {conversation?.otherUser?.name?.[0]}
-            </AvatarFallback>
-          </Avatar>
+          <Image
+            src={conversation?.otherUser?.image || "/default-avatar.png"}
+            alt={`${conversation?.otherUser?.name}'s avatar`}
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
           <div>
             <CardTitle>{conversation?.otherUser?.name}</CardTitle>
             <CardDescription>
@@ -94,9 +93,11 @@ const MessageChat = ({
                     }`}
                   >
                     {message.type === "image" ? (
-                      <img
+                      <Image
                         src={message.content}
                         alt="Attachment"
+                        width={300}
+                        height={200}
                         className="max-w-full h-auto rounded"
                       />
                     ) : (

@@ -70,7 +70,7 @@ const AuthLayout = ({ children, type = "login" }) => {
             <p className="text-sm text-muted-foreground">
               {type === "login" ? (
                 <>
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
                     href="/signup"
                     className="text-primary hover:underline font-medium"

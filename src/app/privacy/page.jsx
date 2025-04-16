@@ -13,9 +13,10 @@ export default function PrivacyPage() {
           <p>Last Updated: [Insert Date]</p>
 
           <p>
-            EduStation ("we," "us," or "our") is committed to protecting your
-            privacy. This Privacy Policy explains how we collect, use, disclose,
-            and safeguard your information when you use our platform.
+            EduStation (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is
+            committed to protecting your privacy. This Privacy Policy explains
+            how we collect, use, disclose, and safeguard your information when
+            you use our platform.
           </p>
 
           <h3 className="text-xl font-semibold">Information We Collect</h3>

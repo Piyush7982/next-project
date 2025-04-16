@@ -24,9 +24,7 @@ export async function connectToDb() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
+    cached.promise = mongoose.connect(MONGODB_URI, opts);
   }
 
   try {
@@ -38,3 +36,5 @@ export async function connectToDb() {
 
   return cached.conn;
 }
+
+export const connectToDatabase = connectToDb; // Alias for backward compatibility

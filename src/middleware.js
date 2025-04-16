@@ -7,17 +7,14 @@ export async function middleware(req) {
   const userRole = token?.role;
   const { pathname } = req.nextUrl;
 
-  const adminBasePath = "/admin"; // Define admin base path
+  const adminBasePath = "/admin";
   const userDashboardPath = "/dashboard";
   const completeProfilePath = "/complete-profile";
-  const adminRoutePrefix = "/admin"; // Keep this for protecting /admin/* routes
+  const adminRoutePrefix = "/admin";
 
   // --- Specific Redirects for Admins ---
   // Redirect admin from root to admin base path
   if (isAuthenticated && userRole === "admin" && pathname === "/") {
-    console.log(
-      `Middleware: Admin accessing root path. Redirecting to ${adminBasePath}.`
-    );
     return NextResponse.redirect(new URL(adminBasePath, req.url));
   }
   // Redirect admin from user dashboard to admin base path
@@ -26,9 +23,6 @@ export async function middleware(req) {
     userRole === "admin" &&
     pathname === userDashboardPath
   ) {
-    console.log(
-      `Middleware: Admin accessing user dashboard (${userDashboardPath}). Redirecting to ${adminBasePath}.`
-    );
     return NextResponse.redirect(new URL(adminBasePath, req.url));
   }
 
@@ -58,9 +52,6 @@ export async function middleware(req) {
   // 2. Handle Admin Route Access (Must be authenticated and admin)
   if (isAdminRoute) {
     if (!isAuthenticated || userRole !== "admin") {
-      console.log(
-        `Middleware: Non-admin access attempt to ${pathname}. Redirecting.`
-      );
       // Redirect non-admins away from /admin/*: If logged in, to their dashboard, else to login
       const redirectUrl = isAuthenticated ? userDashboardPath : "/login";
       return NextResponse.redirect(new URL(redirectUrl, req.url));
@@ -73,12 +64,9 @@ export async function middleware(req) {
   if (isAuthRoute) {
     // If authenticated non-admin, redirect to user dashboard
     if (isAuthenticated && userRole !== "admin") {
-      console.log(
-        `Middleware: Authenticated non-admin on auth route. Redirecting to ${userDashboardPath}.`
-      );
       return NextResponse.redirect(new URL(userDashboardPath, req.url));
     }
-    // Allow unauthenticated users or admins (admins will be redirected away from here by rule #2 if trying /admin/*)
+    // Allow unauthenticated users or admins
     return NextResponse.next();
   }
 
@@ -87,14 +75,10 @@ export async function middleware(req) {
     const callbackUrl = pathname + req.nextUrl.search;
     const url = new URL("/login", req.url);
     url.searchParams.set("callbackUrl", callbackUrl);
-    console.log(
-      `Middleware: Unauthenticated access to ${pathname}. Redirecting to login.`
-    );
     return NextResponse.redirect(url);
   }
 
   // 5. Handle Authenticated User States (Verified/Unverified) for non-admin users
-  // NOTE: This section assumes /dashboard is the primary destination for verified non-admins.
   if (isAuthenticated && userRole !== "admin") {
     const isVerified = token.isVerified;
     const needsProfileCompletion = !isVerified;
@@ -102,24 +86,16 @@ export async function middleware(req) {
 
     // Redirect unverified users to complete profile page
     if (needsProfileCompletion && !isCompleteProfileRoute) {
-      console.log(
-        `Middleware: Unverified non-admin access to ${pathname}. Redirecting to ${completeProfilePath}.`
-      );
       return NextResponse.redirect(new URL(completeProfilePath, req.url));
     }
 
     // Redirect verified users away from complete profile page to their dashboard
     if (!needsProfileCompletion && isCompleteProfileRoute) {
-      console.log(
-        `Middleware: Verified non-admin accessing complete-profile. Redirecting to ${userDashboardPath}.`
-      );
       return NextResponse.redirect(new URL(userDashboardPath, req.url));
     }
   }
 
   // 6. If none of the above conditions caused a redirect, allow access
-  // This covers authenticated non-admins accessing their dashboard, profile, etc.
-  // And authenticated admins accessing non-admin, non-auth, non-public routes (if any exist).
   return NextResponse.next();
 }
 

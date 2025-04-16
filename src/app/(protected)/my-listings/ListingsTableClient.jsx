@@ -66,7 +66,7 @@ export default function ListingsTableClient({ items }) {
       <CardContent>
         {items.length === 0 ? (
           <p className="text-center text-gray-500 dark:text-gray-400">
-            You haven't submitted any items yet.
+            You haven&apos;t created any listings yet.
           </p>
         ) : (
           <Table>

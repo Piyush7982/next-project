@@ -13,9 +13,9 @@ export default function TermsPage() {
           <p>Last Updated: [Insert Date]</p>
 
           <p>
-            Welcome to EduStation! These Terms of Service ("Terms") govern your
-            access to and use of the EduStation website, services, and
-            applications (collectively, the "Platform"). Please read these Terms
+            Welcome to EduStation! These &quot;Terms&quot; govern your access to
+            and use of the EduStation website, services, and applications
+            (collectively, the &quot;Platform&quot;). Please read these Terms
             carefully.
           </p>
 
@@ -43,10 +43,11 @@ export default function TermsPage() {
 
           <h3 className="text-xl font-semibold">4. User Roles</h3>
           <p>
-            Users can register as "Explorers" or "Advertisers." Advertisers may
-            list items/services according to our guidelines and pricing.
-            Explorers may browse and interact with listings. Administrators
-            ("Admins") oversee the platform.
+            Users can register as &quot;Explorers&quot; or
+            &quot;Advertisers.&quot; Advertisers may list items/services
+            according to our guidelines and pricing. Explorers may browse and
+            interact with listings. Administrators (&quot;Admins&quot;) oversee
+            the platform.
           </p>
 
           <h3 className="text-xl font-semibold">5. Listing and Advertising</h3>
@@ -95,10 +96,10 @@ export default function TermsPage() {
 
           <h3 className="text-xl font-semibold">8. Disclaimers</h3>
           <p>
-            The Platform is provided "as is." We do not guarantee the accuracy,
-            completeness, or reliability of any listings or user content.
-            Transactions are solely between users; EduStation is not a party to
-            these transactions.
+            The Platform is provided &quot;as is.&quot; We do not guarantee the
+            accuracy, completeness, or reliability of any listings or user
+            content. Transactions are solely between users; EduStation is not a
+            party to these transactions.
           </p>
 
           <h3 className="text-xl font-semibold">9. Limitation of Liability</h3>

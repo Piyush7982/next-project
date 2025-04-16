@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
 import { Event } from "@/lib/models/event.schema";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/auth";
 import { authOptions } from "@/lib/auth";
 
 export async function GET(request) {

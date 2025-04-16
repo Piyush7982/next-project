@@ -74,10 +74,65 @@ export async function getUserListingsCount(userId) {
     const count = await Listing.countDocuments({
       advertiserId: userObjectId,
       isActive: true,
+      status: "approved", // Only count approved items
     });
     return count;
   } catch (error) {
     console.error(`Error fetching listing count for user ${userId}:`, error);
+    return 0;
+  }
+}
+
+/**
+ * Gets the total count of all active items (listings, events, restaurants) for a user
+ */
+export async function getTotalUserItemsCount(userId) {
+  if (!userId) return 0;
+
+  let userObjectId;
+  try {
+    userObjectId = new mongoose.Types.ObjectId(userId);
+  } catch (err) {
+    return 0;
+  }
+
+  try {
+    await connectToDb();
+
+    // Get count from listings
+    const listingsPromise = Listing.countDocuments({
+      advertiserId: userObjectId,
+      status: "approved",
+    });
+
+    // Get count from events
+    const { Event } = await import("@/lib/models/event.schema.js");
+    const eventsPromise = Event.countDocuments({
+      createdBy: userObjectId,
+      status: "approved",
+    });
+
+    // Get count from restaurants
+    const { Restaurant } = await import("@/lib/models/restaurant.schema.js");
+    const restaurantsPromise = Restaurant.countDocuments({
+      createdBy: userObjectId,
+      status: "approved",
+    });
+
+    // Execute all count queries in parallel
+    const [listingsCount, eventsCount, restaurantsCount] = await Promise.all([
+      listingsPromise,
+      eventsPromise,
+      restaurantsPromise,
+    ]);
+
+    // Return the total count
+    return listingsCount + eventsCount + restaurantsCount;
+  } catch (error) {
+    console.error(
+      `Error fetching total items count for user ${userId}:`,
+      error
+    );
     return 0;
   }
 }
@@ -128,7 +183,7 @@ export async function createListingRequest(formData) {
   const itemType = formData.itemType; // Get itemType
 
   // Validate that itemType is one of the allowed types for this action
-  if (!["Book", "Stationary", "Flat/PG"].includes(itemType)) {
+  if (!["Stationary", "Flat/PG"].includes(itemType)) {
     return {
       success: false,
       message: `Item type '${itemType}' is not handled by this action.`,
@@ -200,14 +255,8 @@ export async function createListingRequest(formData) {
           ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // ~30 days expiry
           : null,
       // Add type-specific fields for Book, Stationary, Flat/PG
-      mrp:
-        itemType === "Book" || itemType === "Stationary"
-          ? formData.mrp
-          : undefined,
-      price:
-        itemType === "Book" || itemType === "Stationary"
-          ? formData.price
-          : undefined,
+      mrp: itemType === "Stationary" ? formData.mrp : undefined,
+      price: itemType === "Stationary" ? formData.price : undefined,
       rent: itemType === "Flat/PG" ? formData.rent : undefined,
       bedrooms: itemType === "Flat/PG" ? formData.bedrooms : undefined,
       bathrooms: itemType === "Flat/PG" ? formData.bathrooms : undefined,
@@ -334,10 +383,9 @@ export async function searchListings(params = {}, limit = 20, page = 1) {
   try {
     await connectToDb();
 
-    // Base query for active, approved listings
+    // Base query for approved listings
     const mongoQuery = {
       status: "approved",
-      isActive: true,
       // expiresAt: { $gt: new Date() } // Optional: Filter out expired if using expiresAt
     };
 
@@ -349,9 +397,7 @@ export async function searchListings(params = {}, limit = 20, page = 1) {
     // Add itemType filter if provided
     if (
       itemType &&
-      ["Book", "Stationary", "Flat/PG", "Restaurant", "Event"].includes(
-        itemType
-      )
+      ["Stationary", "Flat/PG", "Restaurant", "Event"].includes(itemType)
     ) {
       mongoQuery.itemType = itemType;
     }
@@ -513,7 +559,7 @@ export async function getApprovedListings(
 ) {
   try {
     await connectToDb();
-    const query = { status: "approved", isActive: true };
+    const query = { status: "approved" /* , isActive: true */ }; // Removed isActive check
     if (itemType) {
       query.itemType = itemType;
     }
@@ -672,10 +718,10 @@ export async function searchAllItems(params = {}, limit = 20, page = 1) {
     }
 
     // --- Prepare Listing Search ---
-    const listingTypes = ["Book", "Stationary", "Flat/PG"];
+    const listingTypes = ["Stationary", "Flat/PG"];
     if (!itemType || listingTypes.includes(itemType)) {
-      const listingQuery = { ...baseQuery, isActive: true }; // Listings have isActive
-      if (itemType) {
+      const listingQuery = { ...baseQuery /* , isActive: true */ }; // Removed isActive check
+      if (itemType && listingTypes.includes(itemType)) {
         listingQuery.itemType = itemType;
       }
       if (query) {

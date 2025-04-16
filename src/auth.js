@@ -18,7 +18,6 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          console.error("Missing credentials in authorize");
           return null;
         }
 
@@ -27,12 +26,10 @@ export const authOptions = {
           const user = await User.findOne({ username: credentials.username });
 
           if (!user) {
-            console.log("No user found with username:", credentials.username);
             return null;
           }
 
           if (!user.password) {
-            console.error("User found but has no password:", user.username);
             return null;
           }
 
@@ -42,11 +39,9 @@ export const authOptions = {
           );
 
           if (!isValid) {
-            console.log("Invalid password for user:", credentials.username);
             return null;
           }
 
-          console.log("Credentials valid for user:", credentials.username);
           return {
             id: user._id.toString(),
             email: user.email,
@@ -58,7 +53,6 @@ export const authOptions = {
             isVerified: user.isVerified,
           };
         } catch (error) {
-          console.error("Error during authorization:", error);
           return null;
         }
       },

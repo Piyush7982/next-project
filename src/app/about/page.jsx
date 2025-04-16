@@ -17,7 +17,7 @@ export default function AboutPage() {
           <p>
             Our mission is to provide a seamless and trustworthy platform where
             students can easily advertise and discover essential items and
-            services right on campus or nearby. Whether you're looking for
+            services right on campus or nearby. Whether you&apos;re looking for
             textbooks, stationary, accommodation like flats or PGs, great
             restaurant deals, or exciting local events, EduStation is your
             one-stop shop.

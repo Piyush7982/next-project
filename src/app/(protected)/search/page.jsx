@@ -76,7 +76,7 @@ export default function SearchPage() {
   );
 
   // Function to perform search
-  const performSearch = async (skipDebounce = false) => {
+  const performSearch = useCallback(async () => {
     // Don't search if all fields are empty/default and it's not the initial search
     if (
       !query &&
@@ -101,33 +101,24 @@ export default function SearchPage() {
       college: college !== ALL_COLLEGES ? college : "",
     };
 
-    if (skipDebounce) {
-      await debouncedSearch.flush();
-      await debouncedSearch(searchParamsData);
-    } else {
-      debouncedSearch(searchParamsData);
-    }
-  };
+    debouncedSearch(searchParamsData);
+  }, [query, itemType, college, hasInitialized, router, debouncedSearch]);
 
-  // Initial search on mount if URL has params
   useEffect(() => {
-    if (status === "authenticated" && !hasInitialized) {
-      const hasSearchParams =
-        searchParams.get("query") ||
-        searchParams.get("itemType") ||
-        searchParams.get("college");
+    performSearch();
+  }, [searchParams, performSearch]);
 
-      if (hasSearchParams) {
-        performSearch(true);
-      }
+  useEffect(() => {
+    if (!hasInitialized) {
+      performSearch();
       setHasInitialized(true);
     }
-  }, [status, hasInitialized]);
+  }, [hasInitialized, performSearch]);
 
   // Handle form submission
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    await performSearch(true); // Skip debounce on manual submission
+    await performSearch();
   };
 
   // Helper to clear filters
@@ -139,13 +130,6 @@ export default function SearchPage() {
     setError("");
     router.push("/search", { scroll: false });
   };
-
-  // Effect to perform search when filters change
-  useEffect(() => {
-    if (hasInitialized) {
-      performSearch();
-    }
-  }, [query, itemType, college]);
 
   if (status === "loading") {
     return (

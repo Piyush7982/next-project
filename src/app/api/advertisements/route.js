@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
 import { Advertisement } from "@/lib/models/advertisement.schema";
 import { User } from "@/lib/models/user.schema";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/auth";
 import { authOptions } from "@/lib/auth";
 
 // Calculate advertisement cost based on type and duration

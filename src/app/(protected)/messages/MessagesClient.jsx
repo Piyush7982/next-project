@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Circle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,83 +11,126 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils";
 
-export default function MessagesClient({ initialMessages, session }) {
-  const [messages, setMessages] = useState(initialMessages);
+export default function MessagesClient({ initialConversations, session }) {
+  const [conversations, setConversations] = useState(
+    initialConversations || []
+  );
+
+  const truncateText = (text, length = 50) => {
+    if (!text) return "";
+    return text.length > length ? text.substring(0, length) + "..." : text;
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-zinc-900/50 p-4 sm:p-6 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">
-            Messages
-          </h1>
+    <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex items-center justify-between pb-4 border-b border-border">
+          <h1 className="text-3xl font-bold text-foreground">Conversations</h1>
         </div>
 
-        {messages.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-8">
-              <MessageSquare className="h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-gray-600 dark:text-gray-400 text-center">
-                No messages yet. When you contact advertisers or receive
-                messages, they will appear here.
+        {conversations.length === 0 ? (
+          <Card className="border-dashed border-border bg-muted/50">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-lg font-medium text-muted-foreground text-center">
+                No conversations yet.
+              </p>
+              <p className="text-sm text-muted-foreground/80 text-center mt-1">
+                Start a conversation by messaging someone from a listing page.
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {messages.map((message) => {
-              const isIncoming = message.receiverId._id === session.user.id;
-              const otherUser = isIncoming
-                ? message.senderId
-                : message.receiverId;
+          <div className="space-y-3">
+            {conversations.map((conv) => {
+              if (
+                !conv.otherParticipant ||
+                !conv.listing ||
+                !conv.lastMessage
+              ) {
+                console.warn(
+                  "Skipping conversation with missing data:",
+                  conv._id
+                );
+                return null;
+              }
+              const otherUser = conv.otherParticipant;
+              const listing = conv.listing;
+              const lastMsg = conv.lastMessage;
 
               return (
-                <Card
-                  key={message._id}
-                  className={`transition-colors ${
-                    !message.isRead && isIncoming
-                      ? "bg-blue-50 dark:bg-blue-900/20"
-                      : ""
-                  }`}
+                <Link
+                  href={`/messages/${conv._id}`}
+                  key={conv._id}
+                  className="block group"
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-base">
-                          {isIncoming ? "From" : "To"}: {otherUser.name}
-                        </CardTitle>
-                        <CardDescription>
-                          {formatDistanceToNow(new Date(message.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </CardDescription>
+                  <Card
+                    className={cn(
+                      "transition-all duration-150 ease-in-out border-border group-hover:border-primary/50 group-hover:shadow-sm",
+                      conv.isUnread ? "bg-primary/5%" : "bg-card"
+                    )}
+                  >
+                    <CardContent className="p-4 flex items-center gap-4">
+                      <Avatar className="h-12 w-12 border border-border/50">
+                        <AvatarImage
+                          src={otherUser.image || "/placeholder-user.jpg"}
+                          alt={otherUser.name}
+                        />
+                        <AvatarFallback>
+                          {otherUser.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="flex-grow overflow-hidden">
+                        <div className="flex justify-between items-baseline mb-1">
+                          <p
+                            className="font-semibold text-sm text-foreground truncate"
+                            title={otherUser.name}
+                          >
+                            {otherUser.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground whitespace-nowrap">
+                            {formatDistanceToNow(new Date(lastMsg.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </p>
+                        </div>
+                        <div className="flex items-center mb-1">
+                          <span
+                            className="text-xs text-muted-foreground truncate"
+                            title={`Listing: ${listing.title}`}
+                          >
+                            Re: {listing.title}
+                          </span>
+                          <Badge
+                            variant="secondary"
+                            className="ml-1 scale-90 px-1.5 py-0"
+                          >
+                            {listing.itemType}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-muted-foreground truncate pr-2">
+                            {lastMsg.isSender && (
+                              <span className="font-medium">You: </span>
+                            )}
+                            {truncateText(lastMsg.content)}
+                          </p>
+                          {conv.isUnread && (
+                            <Circle
+                              fill="hsl(var(--primary))"
+                              className="h-2.5 w-2.5 text-primary shrink-0"
+                            />
+                          )}
+                        </div>
                       </div>
-                      <Link
-                        href={`/listing/${message.listingId._id}`}
-                        className="text-sm text-blue-600 hover:underline dark:text-blue-400"
-                      >
-                        View Listing
-                      </Link>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">
-                          {message.listingId.itemType}
-                        </Badge>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {message.listingId.title}
-                        </span>
-                      </div>
-                      <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
-                        {message.content}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })}
           </div>

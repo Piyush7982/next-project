@@ -26,6 +26,7 @@ import {
 import { getUserWalletBalance } from "@/actions/wallet.actions";
 import {
   getUserListingsCount,
+  getTotalUserItemsCount,
   getApprovedListings,
   getApprovedEvents,
   getApprovedRestaurants,
@@ -48,7 +49,7 @@ export default async function DashboardPage() {
   const [
     walletBalance,
     unreadMessages,
-    userListingsCount,
+    userItemsCount,
     approvedStationary,
     approvedFlats,
     approvedEvents,
@@ -56,7 +57,7 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     role === "advertiser" ? getUserWalletBalance(userId) : Promise.resolve(0),
     getUnreadMessagesCount(userId),
-    role === "advertiser" ? getUserListingsCount(userId) : Promise.resolve(0),
+    role === "advertiser" ? getTotalUserItemsCount(userId) : Promise.resolve(0),
     getApprovedListings(5, "Stationary", college),
     getApprovedListings(5, "Flat/PG", college),
     getApprovedEvents(5, college),
@@ -160,13 +161,13 @@ export default async function DashboardPage() {
             <Card className="bg-white dark:bg-zinc-800 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Your Active Listings
+                  Your Active Items
                 </CardTitle>
                 <ShoppingCart className="h-5 w-5 text-gray-500 dark:text-gray-400" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-gray-900 dark:text-gray-50">
-                  {userListingsCount || 0}
+                  {userItemsCount || 0}
                 </div>
                 <Link
                   href="/my-listings"
