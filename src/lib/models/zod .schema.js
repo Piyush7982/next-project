@@ -5,7 +5,7 @@ const emailRegex =
   /^(?=.*[a-zA-Z])[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z]+\.[a-zA-Z]+$/;
 
 export const zodUserSchema = z.object({
-  name: z.string().optional(),
+  name: z.string().min(2).max(30),
   email: z
     .string()
     .refine((value) => emailRegex.test(value), {
@@ -17,7 +17,7 @@ export const zodUserSchema = z.object({
   username: z
     .string()
     .refine((value) => usernameRegex.test(value), {
-      message: "Username must be alphnumeric",
+      message: "Username must be alphanumeric",
     })
     .refine((value) => value.length >= 5 && value.length <= 20, {
       message: "Username must be between 5 and 20 characters",
@@ -27,7 +27,7 @@ export const zodUserSchema = z.object({
     .refine((value) => value.length >= 8 && value.length <= 20, {
       message: "Password must be between 8 and 20 characters",
     }),
-  role: z.enum(["Buyer", "Seller", "Admin"]).default("Buyer"),
+  role: z.enum(["admin", "advertiser", "explorer"]).default("explorer"),
 });
 
 export const zodLoginSchema = z.object({

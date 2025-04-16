@@ -1,93 +1,61 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
+import "./listing.schema.js"; // Import the Listing schema first
 
-const messageSchema = new Schema(
+const messageSchema = new mongoose.Schema(
   {
-    conversationId: {
-      type: Schema.Types.ObjectId,
-      ref: "conversation",
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
-    sender: {
-      type: Schema.Types.ObjectId,
-      ref: "users",
+    receiverId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
-    receiver: {
-      type: Schema.Types.ObjectId,
-      ref: "users",
+    listingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Listing", // This will now work because we've imported the Listing model
       required: true,
     },
     content: {
       type: String,
       required: true,
-      trim: true,
-      maxlength: [1000, "Message cannot be more than 1000 characters"],
     },
-    type: {
-      type: String,
-      enum: ["text", "image", "file"],
-      default: "text",
-    },
-    attachments: [
-      {
-        url: String,
-        type: String,
-        name: String,
-        size: Number,
-      },
-    ],
     isRead: {
       type: Boolean,
       default: false,
     },
-    readAt: {
-      type: Date,
-    },
-    deletedBy: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "users",
-      },
-    ],
   },
   {
     timestamps: true,
   }
 );
 
-// Indexes for better query performance
-messageSchema.index({ conversationId: 1, createdAt: -1 });
-messageSchema.index({ sender: 1, receiver: 1 });
-messageSchema.index({ isRead: 1 });
-
-// Pre-save middleware to handle message updates
-messageSchema.pre("save", function (next) {
-  if (this.isModified("isRead") && this.isRead) {
-    this.readAt = new Date();
-  }
-  next();
-});
+// Create indexes for better query performance
+messageSchema.index({ senderId: 1, receiverId: 1 });
+messageSchema.index({ listingId: 1 });
+messageSchema.index({ createdAt: -1 });
 
 export const Message =
-  mongoose.models.message || mongoose.model("message", messageSchema);
+  mongoose.models.Message || mongoose.model("Message", messageSchema);
 
-const conversationSchema = new Schema(
+const conversationSchema = new mongoose.Schema(
   {
     participants: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "users",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
       },
     ],
     lastMessage: {
-      type: Schema.Types.ObjectId,
-      ref: "message",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
     },
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: "stationary",
+    listing: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Listing",
     },
     isArchived: {
       type: Boolean,
@@ -96,8 +64,8 @@ const conversationSchema = new Schema(
     archivedBy: [
       {
         user: {
-          type: Schema.Types.ObjectId,
-          ref: "users",
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
         },
         archivedAt: {
           type: Date,
@@ -114,8 +82,8 @@ const conversationSchema = new Schema(
 // Indexes for conversation schema
 conversationSchema.index({ participants: 1 });
 conversationSchema.index({ lastMessage: 1 });
-conversationSchema.index({ product: 1 });
+conversationSchema.index({ listing: 1 });
 
 export const Conversation =
-  mongoose.models.conversation ||
-  mongoose.model("conversation", conversationSchema);
+  mongoose.models.Conversation ||
+  mongoose.model("Conversation", conversationSchema);

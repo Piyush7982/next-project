@@ -1,149 +1,234 @@
 "use client";
-import CustomForm from "@/components/Form";
-import axios from "axios";
-import { useEffect, useState, useTransition } from "react";
-import { toast } from "react-toastify";
+
+import { useState, useEffect, useTransition } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSession } from "next-auth/react";
 
+// Renamed props for clarity
 export default function UpdateProfileForm({ userdetails }) {
   const router = useRouter();
-  const { update } = useSession();
-  const { mobile, address, username, college } = userdetails;
-  const [mobileNumber, setmobileNumber] = useState(mobile != 0 ? mobile : "");
-
-  const [formError, setformError] = useState("");
+  const { update: updateSession } = useSession(); // Renamed to avoid conflict
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState("");
 
-  const [adress, setadress] = useState(address.length > 1 ? address : "");
-  const [collegee, setcollegee] = useState(college.length > 1 ? college : "");
+  // Initialize state from props, ensuring proper defaults
+  const [formData, setFormData] = useState({
+    phone: userdetails?.phone || "",
+    address: userdetails?.address || "",
+    city: userdetails?.city || "",
+    state: userdetails?.state || "",
+    country: userdetails?.country || "",
+    college: userdetails?.college || "",
+    bio: userdetails?.bio || "",
+    profilePicture: null, // Reset picture on each load for update
+  });
 
-  const [validForm, setvalidForm] = useState(false);
-
-  function handlemobileNumberChange(event) {
-    event.target.value = event.target.value.replace(/\s/g, "");
-    setmobileNumber(event.target.value);
-  }
-  function handleadressChange(event) {
-    setadress(event.target.value);
-  }
-
+  // Clear errors when form data changes
   useEffect(() => {
-    if (
-      mobileNumber.length === 10 &&
-      adress.length > 5 &&
-      collegee.length > 1
-    ) {
-      setvalidForm(true);
-    } else {
-      setvalidForm(false);
+    setError("");
+  }, [formData]);
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  };
+
+  const handleSelectChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      college: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Guard Clause: Ensure userdetails is available
+    if (!userdetails) {
+      setError("User data not available. Cannot update profile.");
+      toast.error("User data not available. Please refresh.");
+      return;
     }
-  }, [mobileNumber, adress, collegee]);
-  useEffect(() => {
-    setformError("");
-  }, [mobileNumber, adress]);
-
-  const inputs = [
-    {
-      id: "mobileNumber",
-      name: "mobileNumber",
-      type: "text",
-      placeholder: "Enter 10 digit number",
-      value: mobileNumber,
-      onChange: handlemobileNumberChange,
-      maxLength: 10,
-    },
-    {
-      id: "adress",
-      name: "adress",
-      type: "adress",
-      placeholder: "Enter Address",
-      value: adress,
-      onChange: handleadressChange,
-      maxLength: 30,
-    },
-  ];
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
 
     startTransition(async () => {
       try {
-        const user = {
-          mobileNumber: mobileNumber,
-          username: username,
-          adress: adress,
-          college: collegee,
-        };
-        const data = JSON.stringify(user);
-
-        const result = await axios.put("/api/user", data, {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
+        const formDataToSend = new FormData();
+        // Only append fields that have changed or the picture
+        let hasChanges = false;
+        Object.entries(formData).forEach(([key, value]) => {
+          if (key === "profilePicture" && value) {
+            formDataToSend.append(key, value);
+            hasChanges = true;
+          } else if (key !== "profilePicture" && value !== userdetails[key]) {
+            // Append only if value exists and is different from original
+            // Check if value is not null/undefined before appending
+            if (value !== null && value !== undefined) {
+              formDataToSend.append(key, value);
+              hasChanges = true;
+            }
+          }
         });
 
-        update({ registrationCompleted: "true", college: collegee });
-
-        setformError("");
-
-        toast.success("Successfully Updated", {
-          autoClose: 2000,
-          theme: "colored",
-        });
-        router.refresh("/profile");
-      } catch (error) {
-        if (
-          error?.response?.data?.Type === "authorisation error" ||
-          error?.response?.data?.Type === "ZodValidationError"
-        ) {
-          setformError(error?.response?.data?.Message);
-        } else {
-          console.error(error);
+        if (!hasChanges) {
+          toast.info("No changes detected.");
+          return;
         }
 
-        return;
+        // Use a different API endpoint for updates
+        const response = await fetch("/api/user/update-profile", {
+          method: "POST", // Or PUT, ensure API route matches
+          body: formDataToSend,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to update profile");
+        }
+
+        // Update session client-side AFTER successful API call
+        await updateSession();
+
+        toast.success("Profile updated successfully");
+        // Optionally refresh the page or specific data
+        router.refresh(); // Refreshes server components on the current route
+      } catch (err) {
+        console.error("Update error:", err);
+        setError(err.message || "An unexpected error occurred.");
+        toast.error(err.message || "Update failed.");
       }
     });
   };
+
+  // Basic structure mirroring complete-profile page
   return (
-    <div className="flex  items-center justify-center ">
-      <CustomForm
-        formError={formError}
-        className="bg-none "
-        formName="Update Profile"
-        buttonText="Submit"
-        inputs={inputs}
-        isValidForm={validForm}
-        handleSubmit={handleSubmit}
-        disabled={isPending}
-      >
-        <Select
-          onValueChange={(value) => setcollegee(value)}
-          defaultValue={collegee}
-          value={collegee}
-          name="college"
-        >
-          <SelectTrigger className="mt-4">
-            <SelectValue placeholder="Select a College" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="NSUT">NSUT</SelectItem>
-            <SelectItem value="DTU">DTU</SelectItem>
-            <SelectItem value="IGDTU">IGDTU</SelectItem>
-            <SelectItem value="IIITD">IIITD</SelectItem>
-            <SelectItem value="IPU">IPU</SelectItem>
-          </SelectContent>
-        </Select>
-      </CustomForm>
-    </div>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && <p className="text-sm text-destructive">{error}</p>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="phone">Phone Number</Label>
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Enter your 10-digit phone number"
+            maxLength={10}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="profilePicture">Update Profile Picture</Label>
+          <Input
+            id="profilePicture"
+            name="profilePicture"
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="address">Address</Label>
+          <Input
+            id="address"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="Enter your address"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            placeholder="Enter your city"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="state">State</Label>
+          <Input
+            id="state"
+            name="state"
+            value={formData.state}
+            onChange={handleChange}
+            placeholder="Enter your state"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="country">Country</Label>
+          <Input
+            id="country"
+            name="country"
+            value={formData.country}
+            onChange={handleChange}
+            placeholder="Enter your country"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="college">College</Label>
+          <Select
+            name="college"
+            onValueChange={handleSelectChange}
+            value={formData.college}
+          >
+            <SelectTrigger id="college">
+              <SelectValue placeholder="Select your college" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="NSUT">NSUT</SelectItem>
+              <SelectItem value="DTU">DTU</SelectItem>
+              <SelectItem value="IPU">IPU</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="bio">Bio</Label>
+        <Textarea
+          id="bio"
+          name="bio"
+          value={formData.bio}
+          onChange={handleChange}
+          placeholder="Tell us about yourself"
+          rows={4}
+        />
+      </div>
+      <Button type="submit" className="w-full" disabled={isPending}>
+        {isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating...
+          </>
+        ) : (
+          "Update Profile"
+        )}
+      </Button>
+    </form>
   );
 }

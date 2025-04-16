@@ -15,6 +15,20 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { fetchAdminDetails } from "@/actions/admin.actions";
+import { redirect } from "next/navigation";
+import {
+  Users, // Icon for user management
+  ClipboardList, // Icon for pending approvals
+  ShieldCheck, // Icon for responsibilities
+} from "lucide-react";
+import {
+  getPendingListingsCount, // Existing
+  getUserCount, // Existing
+  // Import new count actions
+  getPendingEventsCount,
+  getPendingRestaurantsCount,
+} from "@/actions/admin.actions";
+
 async function Page() {
   const session = await auth();
   if (!session) {
@@ -23,159 +37,149 @@ async function Page() {
   const id = session?.user?.id;
   const data = await fetchAdminDetails(id);
 
-  return (
-    <div className="min-h-screen flex flex-col items-center   space-y-24 sm:pt-20 pt-40 mb-10">
-      <div className="container flex flex-col  gap-10 md:gap-20 ">
-        <div className="w-full grid md:grid-cols-8 grid-cols-1 gap-4">
-          <Card className=" relative border-0 shadow-none md:h-40 md:col-span-3    md:mb-10  flex flex-col justify-around">
-            <div className="relative z-10 text-primary">
-              {" "}
-              <CardHeader>
-                {/* <CardHeader className=" flex-row items-center justify-between"> */}
-                <CardTitle className="text-3xl">Welcome Admin</CardTitle>
-                {/* <Image src={avenger} /> */}
-              </CardHeader>
-              <CardContent>
-                <p>You are an Admin and can perform admin permitted duty.</p>
-              </CardContent>
-            </div>
-          </Card>
-          <Card className="relative  md:min-h-40  md:mb-10  flex flex-col justify-around md:col-start-5 md:col-span-3 ">
-            <div className="relative z-10  ">
-              <CardHeader>
-                <CardTitle>Your Credentials</CardTitle>
-              </CardHeader>
+  // Middleware should handle auth/role check, but double-check
+  if (!session?.user || session.user.role !== "admin") {
+    return redirect("/login?error=Unauthorized");
+  }
 
-              {/* </div> */}
-              <CardContent className="">
-                <div className="w-full flex flex-col items-center ">
-                  <div className="flex  justify-between w-11/12 md:w-9/12">
-                    <h1 className="font-medium">Username:</h1>
-                    <h1 className=" text-md">{data?.username}</h1>
-                  </div>
-                  <div className="flex  justify-between w-11/12 md:w-9/12">
-                    <h1 className="font-medium ">Email:</h1>
-                    <h1 className="text-md  ">{data?.email}</h1>
-                  </div>
-                  <div className="flex  justify-between w-11/12 md:w-9/12">
-                    <h1 className="font-medium ">Pending Approvals:</h1>
-                    <h1 className="text-md  ">10</h1>
-                  </div>
-                </div>
-              </CardContent>
-            </div>
+  const { name, username, email } = session.user;
+
+  // Fetch ALL pending counts
+  const [pendingListings, pendingEvents, pendingRestaurants, totalUsers] =
+    await Promise.all([
+      getPendingListingsCount(),
+      getPendingEventsCount(), // Fetch event count
+      getPendingRestaurantsCount(), // Fetch restaurant count
+      getUserCount(),
+    ]);
+
+  // Calculate total pending count
+  const totalPendingApprovals =
+    pendingListings + pendingEvents + pendingRestaurants;
+
+  return (
+    <div className="min-h-screen bg-gray-50/50 dark:bg-zinc-900/50 p-4 sm:p-6 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header Section */}
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Welcome, {name || username}!
+            </p>
+          </div>
+          <Link href="/admin/update">
+            <Button>
+              <ClipboardList className="mr-2 h-4 w-4" /> Manage Duties
+            </Button>
+          </Link>
+        </header>
+
+        {/* Grid for Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Pending Approvals Card - Updated Count */}
+          <Card className="bg-white dark:bg-zinc-800 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Pending Approvals
+              </CardTitle>
+              <ClipboardList className="h-5 w-5 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-50">
+                {totalPendingApprovals || 0} {/* Use the combined count */}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Listings, events, and restaurants awaiting review.
+              </p>
+              <Link
+                href="/admin/update?tab=approvals"
+                className="text-xs text-blue-600 hover:underline dark:text-blue-400 mt-1 block"
+              >
+                Review Items &rarr;
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* User Management Card - Updated Count */}
+          <Card className="bg-white dark:bg-zinc-800 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                User Management
+              </CardTitle>
+              <Users className="h-5 w-5 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-50">
+                {totalUsers || 0} {/* Use correct variable */}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Total registered users.
+              </p>
+              <Link
+                href="/admin/update?tab=users"
+                className="text-xs text-blue-600 hover:underline dark:text-blue-400 mt-1 block"
+              >
+                Manage Users &rarr;
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Your Credentials Card */}
+          <Card className="bg-white dark:bg-zinc-800 shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Your Credentials
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+              <p>
+                <span className="font-medium text-gray-800 dark:text-gray-100">
+                  Username:
+                </span>{" "}
+                {username}
+              </p>
+              <p>
+                <span className="font-medium text-gray-800 dark:text-gray-100">
+                  Email:
+                </span>{" "}
+                {email}
+              </p>
+            </CardContent>
           </Card>
         </div>
-        <Card className="bg-accent relative flex flex-col  container md:w-4/6 py-5 md:gap-4">
-          <Image
-            src={superman}
-            objectFit="cover"
-            fill={true}
-            className="  opacity-40 "
-            alt="cover"
-          />
-          <div className="z-10 relative text-primary">
+
+        {/* Admin Responsibilities Section */}
+        <section>
+          <Card className="bg-white dark:bg-zinc-800 shadow-sm">
             <CardHeader>
-              <CardTitle className="font-bold md:text-3xl">
-                Your Responsiblities
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="md:text-lg  flex flex-col items-start gap-5 md:pl-16 ">
-              <p className="flex items-center gap-4 ">
-                {" "}
-                <span>
-                  <MousePointerSquare size={20} className="opacity-80" />
-                </span>{" "}
-                You are authorized to promote/demote an individual as an
-                Admin/User.
-              </p>
-              <p className="flex items-center gap-4">
-                {" "}
-                <span>
-                  <MousePointerSquare size={20} className="opacity-80" />
-                </span>{" "}
-                You have authority to approve/decline user requests that are
-                needed to be verified by an admin .
-              </p>
-              <p className="flex items-center gap-4">
-                {" "}
-                <span>
-                  <MousePointerSquare size={20} className="opacity-80" />
-                </span>{" "}
-                You have authority to remove/ban inappropriate content.
-              </p>
-            </CardContent>
-          </div>
-        </Card>
-        {/* <Image src={avenger} /> */}
-        <Card className="relative bg-accent flex flex-col  container md:w-4/6 py-5 md:gap-7 ">
-          <Image
-            src={avenger}
-            objectFit="cover"
-            fill={true}
-            alt="cover"
-            // className="  invisible dark:visible dark:opacity-30 "
-            className=" backdrop-brightness-50 dark:brightness-100 opacity-30 "
-          />
-          <div className="z-10 relative ">
-            <CardHeader>
-              <CardTitle className="font-bold md:text-3xl mb-3">
-                The Avengers Initiative: Admin Code of Conduct
-              </CardTitle>
-              <CardDescription>
-                Just as the Avengers are entrusted with the power to protect the
-                universe, you, as an admin, are entrusted with the power to
-                maintain the balance of this website. With great power comes
-                great responsibility.
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-6 w-6 text-green-600" />
+                <CardTitle className="text-xl text-gray-900 dark:text-gray-50">
+                  Admin Responsibilities
+                </CardTitle>
+              </div>
+              <CardDescription className="dark:text-gray-400">
+                With great power comes great responsibility. Use your admin
+                privileges wisely.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col relative ">
-              {" "}
-              <CardTitle className="mb-2">
-                1. The Power of Thor&apos;s Hammer: Admin Rights
-              </CardTitle>
-              <CardDescription className="mb-6 ">
-                You wield the power of Mjolnir, Thor&apos;s hammer. You can
-                grant admin rights, demote admins to regular users, or ban
-                users. But remember, &quot;Whosoever holds this hammer, if he be
-                worthy, shall possess the power of Thor.&quot; Use your powers
-                wisely and justly.
-              </CardDescription>
-              <CardTitle className="mb-2">
-                2. The Wisdom of Vision: Fair Judgment
-              </CardTitle>
-              <CardDescription className="mb-6">
-                Vision was created for the betterment of the universe. As an
-                admin, you are expected to approve pending requests that require
-                admin verification. Use the Mind Stone&apos;s wisdom to make
-                fair and unbiased decisions.
-              </CardDescription>
-              <CardTitle className="mb-2">
-                3. The Tenacity of Captain America: Respect and Dignity
-              </CardTitle>
-              <CardDescription className="mb-6">
-                Captain America stands for respect and dignity. Treat all users
-                with the same respect and dignity that Steve Rogers shows to
-                everyone, regardless of their status on the website.
-              </CardDescription>
-              <CardTitle className="mb-2">
-                4. The Responsibility of Spider-Man: No Misuse of Power
-              </CardTitle>
-              <CardDescription className="mb-6">
-                Remember Peter Parker&apos;s lesson: &quot;With great power
-                comes great responsibility.&quot; Do not misuse your admin
-                powers for personal gain or amusement.
-              </CardDescription>
+            <CardContent className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+              <p>• Approve or reject advertiser listing requests.</p>
+              <p>
+                • Promote or demote users between roles (e.g., explorer,
+                advertiser, admin).
+              </p>
+              <p>• Remove users or inappropriate content if necessary.</p>
+              <p>
+                • Ensure the platform guidelines and code of conduct are
+                followed.
+              </p>
             </CardContent>
-            {/* <CardFooter> */}
-            <div className="flex items-center justify-center">
-              <Link href="/admin/update">
-                <Button>Avengers Assemble</Button>
-              </Link>
-            </div>
-            {/* </CardFooter> */}
-          </div>
-        </Card>
+          </Card>
+        </section>
       </div>
     </div>
   );

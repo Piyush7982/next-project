@@ -1,131 +1,294 @@
+"use client"; // May need client-side interaction for search/filter later
+
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation"; // Use hooks for client component
+import { useSession } from "next-auth/react";
+import { Loader2, Search as SearchIcon, X } from "lucide-react";
+import { toast } from "sonner";
+import debounce from "lodash/debounce";
+import { searchAllItems } from "@/actions/listing.actions";
+import ItemCard from "@/components/ItemCard"; // Use the new item card
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { auth } from "@/auth";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
-import Image from "next/image";
-import { ClientItemRequest } from "./clientcomponents";
-import { fetchProductPage } from "@/actions/items.actions";
-import { notFound, redirect } from "next/navigation";
+// Define constants for filters
+// Ensure no empty strings in these arrays
+const ITEM_TYPES = ["Stationary", "Flat/PG", "Restaurant", "Event"].filter(
+  Boolean
+);
+const COLLEGES = ["NSUT", "DTU", "IPU"].filter(Boolean);
 
-export default async function ProductPage(props) {
-  const session = await auth();
-  if (!session) {
-    return redirect("/login");
+// Special values for "all" options
+const ALL_TYPES = "all";
+const ALL_COLLEGES = "all";
+
+export default function SearchPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams(); // Get initial params from URL
+  const { data: session, status } = useSession();
+
+  // State for search/filter inputs
+  const [query, setQuery] = useState(searchParams.get("query") || "");
+  const [itemType, setItemType] = useState(
+    searchParams.get("itemType") || ALL_TYPES
+  );
+  const [college, setCollege] = useState(
+    session?.user?.college || searchParams.get("college") || ALL_COLLEGES
+  ); // Default to user's college if available
+  // TODO: Add state for price filters if needed
+
+  // State for results and loading
+  const [results, setResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState("");
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce(async (searchParams) => {
+      setError("");
+      setIsSearching(true);
+
+      try {
+        const fetchedItems = await searchAllItems(searchParams);
+        setResults(fetchedItems || []);
+        if (!fetchedItems || fetchedItems.length === 0) {
+          toast.info("No items found matching your criteria.");
+        }
+      } catch (err) {
+        console.error("Search failed:", err);
+        setError("Failed to fetch items. Please try again.");
+        toast.error("Search failed. Please try again later.");
+        setResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500),
+    []
+  );
+
+  // Function to perform search
+  const performSearch = async (skipDebounce = false) => {
+    // Don't search if all fields are empty/default and it's not the initial search
+    if (
+      !query &&
+      itemType === ALL_TYPES &&
+      college === ALL_COLLEGES &&
+      hasInitialized
+    ) {
+      setResults([]);
+      return;
+    }
+
+    // Update URL
+    const params = new URLSearchParams();
+    if (query) params.set("query", query);
+    if (itemType !== ALL_TYPES) params.set("itemType", itemType);
+    if (college !== ALL_COLLEGES) params.set("college", college);
+    router.push(`/search?${params.toString()}`, { scroll: false });
+
+    const searchParamsData = {
+      query: query.trim(),
+      itemType: itemType !== ALL_TYPES ? itemType : "",
+      college: college !== ALL_COLLEGES ? college : "",
+    };
+
+    if (skipDebounce) {
+      await debouncedSearch.flush();
+      await debouncedSearch(searchParamsData);
+    } else {
+      debouncedSearch(searchParamsData);
+    }
+  };
+
+  // Initial search on mount if URL has params
+  useEffect(() => {
+    if (status === "authenticated" && !hasInitialized) {
+      const hasSearchParams =
+        searchParams.get("query") ||
+        searchParams.get("itemType") ||
+        searchParams.get("college");
+
+      if (hasSearchParams) {
+        performSearch(true);
+      }
+      setHasInitialized(true);
+    }
+  }, [status, hasInitialized]);
+
+  // Handle form submission
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    await performSearch(true); // Skip debounce on manual submission
+  };
+
+  // Helper to clear filters
+  const clearFilters = () => {
+    setQuery("");
+    setItemType(ALL_TYPES);
+    setCollege(session?.user?.college || ALL_COLLEGES);
+    setResults([]);
+    setError("");
+    router.push("/search", { scroll: false });
+  };
+
+  // Effect to perform search when filters change
+  useEffect(() => {
+    if (hasInitialized) {
+      performSearch();
+    }
+  }, [query, itemType, college]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
-
-  const user = session?.user;
-  // if (user?.registrationCompleted === "false") {
-  //   redirect("/profile");
-  // }
-  const { searchParams } = props;
-  const data = await fetchProductPage(searchParams?.type, searchParams?.id);
-  if (!data) {
-    notFound();
+  // Redirect if not authenticated (optional, depends on requirements)
+  if (status === "unauthenticated") {
+    router.push("/login?callbackUrl=/search");
+    return null; // Render nothing while redirecting
   }
-  const role = session?.user?.role === "Buyer" ? "Borrower" : "Lender";
 
   return (
-    <div className="min-h-screen flex flex-col  items-center   space-y-24 sm:pt-20 pt-24 mb-10">
-      <Card className="container  border-0 shadow-none md:py-4   ">
-        <div className="grid  md:grid-cols-12 grid-cols-1 gap-2 max-sm:gap-8    ">
-          {/* <div className="flex items-center justify-center min-h-96 gap-3"> */}
-          <Image
-            className="bg-white h-80       rounded-md md:col-span-3 col-span-1 md:col-start-1 "
-            src={
-              data?.image
-                ? data.image
-                : "https://th.bing.com/th/id/OIP.RYDmKYNwd0vEueh_4VLRdAAAAA?rs=1&pid=ImgDetMain"
-            }
-            alt="image"
-            height={400}
-            width={440}
-          />
+    <div className="min-h-screen bg-gray-50/50 dark:bg-zinc-900/50 p-4 sm:p-6 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-gray-50">
+          Browse Items
+        </h1>
 
-          <div className="flex flex-col md:-ml-4     min-h-80  md:col-span-9 col-span-1 md:col-start-4 md:pl-16 pt-1 sm:gap-5 max-sm:gap-9 ">
-            <div className="font-bold text-5xl capitalize">{data?.name}</div>
-            <div className="font-medium text-muted-foreground max-sm:-mt-7 -mt-4 opacity-90">
-              {data?.tags &&
-                data?.tags.map((tag) => {
-                  return tag + " ";
-                })}
-              {!data?.tags && <>#story,#adventure,#tale,#jeanlumier</>}
-            </div>
-            {searchParams?.type === "Flat" && (
-              <div className="container mx-0 px-0 min-h-10 max-h-32 break-words capitalize">
-                {" "}
-                <span className="font-bold text-xl ">Location :</span>{" "}
-                {data?.location}
-              </div>
-            )}
-            {searchParams?.type === "Stationary" && (
-              <div className="container mx-0 px-0  min-h-10 max-h-32 break-words capitalize">
-                {" "}
-                <span className="font-bold text-xl ">
-                  Recommended For :
-                </span>{" "}
-                {data?.recommendedFor}
-              </div>
-            )}
-            <div className="py-7  flex flex-col  gap-2">
-              <h1 className="text-2xl font-bold ">
-                ${data?.price}{" "}
-                <span className="font-light text-sm"> per item</span>{" "}
-              </h1>
-              {role === "Borrower" && (
-                <div className="text-xl max-sm:mt-4 font-bold">
-                  Request to buy:{" "}
-                  <span>
-                    <ClientItemRequest
-                      userId={session?.user?.id + ""}
-                      itemId={data?._id + ""}
-                      type={
-                        searchParams?.type === "Flat" ? "Flats" : "stationaries"
-                      }
-                    />
-                  </span>
-                </div>
-              )}
-              {role === "Lender" && (
-                <div className="text-red-500 pt-3 opacity-90 ">
-                  {" "}
-                  You are not allowed to purchase
-                </div>
-              )}
-            </div>
-            {/* <div className="text-xl font-medium">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, quo delectus! Ipsam obcaecati necessitatibus officia
-                optio laudantium iure reiciendis sed similique sunt. Illum, odit.
-                Saepe commodi blanditiis, repellat facere doloremque quis
-                inventore accusamus assumenda qui? Tempore ratione impedit fugiat
-                exercitationem.
-              </div> */}
+        {/* Search and Filter Bar */}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="bg-white dark:bg-zinc-800 p-4 rounded-lg shadow-sm space-y-4 md:space-y-0 md:flex md:items-end md:gap-4"
+        >
+          {/* Search Input */}
+          <div className="flex-grow space-y-1">
+            <Label htmlFor="search-query">Search</Label>
+            <Input
+              id="search-query"
+              placeholder="Search by title or description..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="dark:bg-zinc-700"
+            />
           </div>
-        </div>
-        <div className="pt-7 flex flex-col gap-2   min-h-56 break-words">
-          <h1 className="font-bold text-3xl tracking-wide ">Description :</h1>
-          <div className="font-light  px-1       w-full break-words capitalize  ">
-            {/* “The Little Story Book” by Jean Lumier is a captivating collection
-            of adventurous tales designed to ignite the imagination of young
-            readers. Each story is a journey into a world of excitement and
-            wonder, where children can explore, learn, and grow. The book is
-            filled with vibrant characters, thrilling plots, and valuable life
-            lessons. From daring quests in enchanted forests to exciting voyages
-            across the seven seas, Lumier’s stories are not just entertaining,
-            but also foster creativity, courage, and curiosity. Lumier’s unique
-            storytelling style is engaging and easy to understand, making it
-            perfect for children. The stories are short enough to keep a child’s
-            attention, yet rich enough to be enjoyed over and over again. */}
-            {data?.description}
+
+          {/* Item Type Filter */}
+          <div className="space-y-1 min-w-[150px]">
+            <Label htmlFor="item-type">Item Type</Label>
+            <Select value={itemType} onValueChange={setItemType}>
+              <SelectTrigger id="item-type" className="dark:bg-zinc-700">
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_TYPES}>All Types</SelectItem>
+                {ITEM_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* College Filter */}
+          <div className="space-y-1 min-w-[150px]">
+            <Label htmlFor="college">College</Label>
+            <Select value={college} onValueChange={setCollege}>
+              <SelectTrigger id="college" className="dark:bg-zinc-700">
+                <SelectValue placeholder="All Colleges" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_COLLEGES}>All Colleges</SelectItem>
+                {COLLEGES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 pt-4 md:pt-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={clearFilters}
+              disabled={isSearching}
+              className="flex-shrink-0"
+            >
+              <X className="h-4 w-4 mr-1" /> Clear
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSearching}
+              className="flex-shrink-0"
+            >
+              {isSearching ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              ) : (
+                <SearchIcon className="h-4 w-4 mr-1" />
+              )}{" "}
+              Search
+            </Button>
+          </div>
+        </form>
+
+        {/* Error Display */}
+        {error && (
+          <div className="text-red-600 dark:text-red-400 text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-md">
+            {error}
+          </div>
+        )}
+
+        {/* Results Section */}
+        <div className="min-h-[400px]">
+          {isSearching ? (
+            <div className="flex flex-col items-center justify-center pt-10 space-y-2">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Searching for items...
+              </p>
+            </div>
+          ) : results.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {results.map((item) => (
+                <ItemCard key={`${item.itemType}-${item.id}`} item={item} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center pt-10 text-gray-500 dark:text-gray-400">
+              {query || itemType !== ALL_TYPES || college !== ALL_COLLEGES ? (
+                <p>
+                  No items found matching your criteria.
+                  <br />
+                  Try adjusting your filters or search terms.
+                </p>
+              ) : (
+                <p>
+                  Start searching by entering keywords or selecting filters.
+                  <br />
+                  You can search by title, description, or use the filters
+                  above.
+                </p>
+              )}
+            </div>
+          )}
+          {/* TODO: Add Pagination Controls */}
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

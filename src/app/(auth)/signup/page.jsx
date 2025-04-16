@@ -42,7 +42,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [isValidPassword, setisValidPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [role, setrole] = useState("Buyer");
+  const [role, setRole] = useState("explorer");
 
   const [isPending, startTransition] = useTransition();
 
@@ -199,27 +199,36 @@ export default function Signup() {
             {formError}
           </div>
         )}
-
         <div className="space-y-2">
-          <label className="text-sm font-medium">Full Name</label>
+          <label htmlFor="name" className="text-sm font-medium">
+            Full Name
+          </label>
           <Input
+            id="name"
+            name="name"
             type="text"
             placeholder="Enter your full name"
             value={name}
             onChange={handleNameChange}
             className={nameError ? "border-destructive" : ""}
+            maxLength={30}
           />
           {nameError && <p className="text-sm text-destructive">{nameError}</p>}
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Username</label>
+          <label htmlFor="username" className="text-sm font-medium">
+            Username
+          </label>
           <Input
+            id="username"
+            name="username"
             type="text"
             placeholder="Choose a username"
             value={username}
             onChange={handleUsernameChange}
             className={usernameError ? "border-destructive" : ""}
+            maxLength={20}
           />
           {usernameError && (
             <p className="text-sm text-destructive">{usernameError}</p>
@@ -227,13 +236,18 @@ export default function Signup() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Email</label>
+          <label htmlFor="email" className="text-sm font-medium">
+            Email
+          </label>
           <Input
+            id="email"
+            name="email"
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={handleEmailChange}
             className={emailError ? "border-destructive" : ""}
+            maxLength={30}
           />
           {emailError && (
             <p className="text-sm text-destructive">{emailError}</p>
@@ -241,30 +255,37 @@ export default function Signup() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Password</label>
+          <label htmlFor="password" className="text-sm font-medium">
+            Password
+          </label>
           <Input
+            id="password"
+            name="password"
             type="password"
             placeholder="Create a password"
             value={password}
             onChange={handlePasswordChange}
             className={passwordError ? "border-destructive" : ""}
+            maxLength={20}
           />
           {passwordError && (
             <p className="text-sm text-destructive">{passwordError}</p>
           )}
         </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Role</label>
-          <Select value={role} onValueChange={setrole}>
+        <div className="space-y-2">
+          <label htmlFor="role" className="text-sm font-medium">
+            Account Type
+          </label>
+          <Select value={role} onValueChange={setRole}>
             <SelectTrigger>
-              <SelectValue placeholder="Select role" />
+              <SelectValue placeholder="Select account type" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Role</SelectLabel>
-                <SelectItem value="Buyer">Buyer</SelectItem>
-                <SelectItem value="Seller">Seller</SelectItem>
+                <SelectLabel>Account Types</SelectLabel>
+                <SelectItem value="explorer">Explorer</SelectItem>
+                <SelectItem value="advertiser">Advertiser</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

@@ -1,59 +1,142 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
-  providers: [
-    Credentials({
-      name: "credentials",
-      type: "credentials",
-      async authorize(credential) {
-        const user = {
-          username: credential?.username,
-          role: credential?.role,
-          id: credential?.userId,
-          registrationCompleted: credential?.registrationCompleted,
-          college: credential?.college,
-        };
+import CredentialsProvider from "next-auth/providers/credentials";
+import { connectToDb } from "@/lib/db";
+import { User } from "@/lib/models/user.schema";
+import { verifyPassword } from "@/lib/auth";
 
-        return user;
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("Please provide process.env.NEXTAUTH_SECRET");
+}
+
+export const authOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          console.error("Missing credentials in authorize");
+          return null;
+        }
+
+        try {
+          await connectToDb();
+          const user = await User.findOne({ username: credentials.username });
+
+          if (!user) {
+            console.log("No user found with username:", credentials.username);
+            return null;
+          }
+
+          if (!user.password) {
+            console.error("User found but has no password:", user.username);
+            return null;
+          }
+
+          const isValid = await verifyPassword(
+            credentials.password,
+            user.password
+          );
+
+          if (!isValid) {
+            console.log("Invalid password for user:", credentials.username);
+            return null;
+          }
+
+          console.log("Credentials valid for user:", credentials.username);
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            username: user.username,
+            role: user.role,
+            college: user.college,
+            profileStatus: user.profileStatus,
+            isVerified: user.isVerified,
+          };
+        } catch (error) {
+          console.error("Error during authorization:", error);
+          return null;
+        }
       },
     }),
   ],
-  secret: process.env.AUTH_SECRET,
-  trustHost: true,
-  pages: { signIn: "/login" },
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+  },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      if (trigger === "update" && session?.registrationCompleted) {
-        // console.log("first");
-        token.registrationCompleted = session?.registrationCompleted;
-        token.college = session?.college;
-      } else if (user) {
-        token.username = user?.username;
-        token.role = user?.role;
-        token.id = user?.id;
-        token.registrationCompleted = user?.registrationCompleted;
-        token.college = user?.college;
+      // Initial sign in
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
+        token.college = user.college;
+        token.profileStatus = user.profileStatus;
+        token.isVerified = user.isVerified;
+        token.username = user.username;
+      }
+
+      // If trigger is 'update'
+      if (trigger === "update" && session) {
+        // Merging logic can be added here if needed for specific fields
+      }
+
+      // Re-fetch logic
+      if (!user) {
+        try {
+          await connectToDb();
+          const dbUser = await User.findById(token.id);
+          if (dbUser) {
+            token.name = dbUser.name;
+            token.email = dbUser.email;
+            token.role = dbUser.role;
+            token.college = dbUser.college;
+            token.profileStatus = dbUser.profileStatus;
+            token.isVerified = dbUser.isVerified;
+            token.username = dbUser.username;
+          } else {
+          }
+        } catch (error) {}
       }
 
       return token;
     },
     async session({ session, token }) {
-      if (session?.user) {
-        session.user = {
-          role: token?.role,
-          username: token?.username,
-          id: token?.id,
-          registrationCompleted: token?.registrationCompleted,
-          college: token?.college,
-        };
+      if (token && session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.college = token.college;
+        session.user.profileStatus = token.profileStatus;
+        session.user.isVerified = token.isVerified;
+        session.user.username = token.username;
+        session.user.name = token.name;
+        session.user.email = token.email;
+      } else if (!session.user) {
+        session.user = {};
       }
-
       return session;
     },
   },
-});
+  debug: process.env.NODE_ENV === "development",
+};
+
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth(authOptions);

@@ -14,12 +14,19 @@ export async function Signup(req, res) {
     await connecToDb();
     const data = await req.json();
 
+    const name = data.name;
     const username = data.username;
     const password = data.password;
     const email = data.email;
     const role = data.role;
 
-    const result = zodUserSchema.safeParse({ username, password, email, role });
+    const result = zodUserSchema.safeParse({
+      name,
+      username,
+      password,
+      email,
+      role,
+    });
     if (!result.success) {
       const validationError = fromZodError(result.error);
 
@@ -46,6 +53,7 @@ export async function Signup(req, res) {
     }
     const hashedPass = await hashPassword(password);
     const response = await User.create({
+      name,
       username,
       email,
       password: hashedPass,
@@ -53,7 +61,7 @@ export async function Signup(req, res) {
     });
     // return NextResponse.json({ message: create }, { status: 200 });
     return successResponse(
-      "Created user succesfully",
+      "Created user successfully",
       response,
       StatusCodes.ACCEPTED
     );
